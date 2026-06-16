@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from 'react';
 import {
   Modal, View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, KeyboardAvoidingView, Platform, Animated,
+  StyleSheet, KeyboardAvoidingView, Platform,
 } from 'react-native';
-import { Colors, PriorityColors } from '../constants/colors';
+import { Colors } from '../constants/colors';
 import { DEFAULT_TAGS } from '../constants/projects';
-import { Task, Priority, EnergyLevel, Recurrence, SubTask } from '../types';
+import { Task, Priority, EnergyLevel, Recurrence, SubTask, TimeSlot } from '../types';
 import { decomposeTask } from '../utils/claudeApi';
 
 interface Props {
@@ -17,6 +17,7 @@ interface Props {
   editTask?: Task | null;
   apiKey: string;
   defaultProject?: string;
+  defaultSlot?: TimeSlot;
 }
 
 const PRIORITIES: { value: Priority; label: string; color: string }[] = [
@@ -38,7 +39,14 @@ const RECURRENCES: { value: Recurrence; label: string }[] = [
   { value: 'monthly', label: 'Mensuelle' },
 ];
 
-export default function TaskModal({ visible, onClose, onSave, projects, editTask, apiKey, defaultProject }: Props) {
+const TIME_SLOTS: { value: TimeSlot; label: string; icon: string }[] = [
+  { value: 'work', label: 'Boulot', icon: '🏢' },
+  { value: 'evening-short', label: 'Soir court', icon: '⚡' },
+  { value: 'evening-late', label: 'Soir tard', icon: '🌙' },
+  { value: 'weekend', label: 'Weekend', icon: '🔥' },
+];
+
+export default function TaskModal({ visible, onClose, onSave, projects, editTask, apiKey, defaultProject, defaultSlot }: Props) {
   const [title, setTitle] = useState('');
   const [projectId, setProjectId] = useState(defaultProject ?? projects[0]?.id ?? '');
   const [priority, setPriority] = useState<Priority>('normal');
@@ -51,6 +59,7 @@ export default function TaskModal({ visible, onClose, onSave, projects, editTask
   const [isMIT, setIsMIT] = useState(false);
   const [subtasks, setSubtasks] = useState<SubTask[]>([]);
   const [decomposing, setDecomposing] = useState(false);
+  const [timeSlot, setTimeSlot] = useState<TimeSlot | undefined>(defaultSlot);
 
   useEffect(() => {
     if (editTask) {
@@ -65,11 +74,13 @@ export default function TaskModal({ visible, onClose, onSave, projects, editTask
       setNotes(editTask.notes ?? '');
       setIsMIT(editTask.isMIT);
       setSubtasks(editTask.subtasks ?? []);
+      setTimeSlot(editTask.timeSlot);
     } else {
       resetForm();
       if (defaultProject) setProjectId(defaultProject);
+      if (defaultSlot) setTimeSlot(defaultSlot);
     }
-  }, [editTask, visible, defaultProject]);
+  }, [editTask, visible, defaultProject, defaultSlot]);
 
   function resetForm() {
     setTitle('');
@@ -84,6 +95,7 @@ export default function TaskModal({ visible, onClose, onSave, projects, editTask
     setIsMIT(false);
     setSubtasks([]);
     setDecomposing(false);
+    setTimeSlot(defaultSlot);
   }
 
   function handleSave() {
@@ -105,6 +117,7 @@ export default function TaskModal({ visible, onClose, onSave, projects, editTask
       createdAt: editTask?.createdAt ?? new Date().toISOString(),
       completedAt: editTask?.completedAt,
       subtasks: subtasks.length ? subtasks : undefined,
+      timeSlot,
     };
     onSave(task);
     resetForm();
@@ -200,6 +213,32 @@ export default function TaskModal({ visible, onClose, onSave, projects, editTask
                   onPress={() => setPriority(p.value)}
                 >
                   <Text style={[styles.chipText, priority === p.value && { color: p.color }]}>{p.label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          {/* Créneau de travail */}
+          <View style={styles.section}>
+            <Text style={styles.label}>Créneau de travail</Text>
+            <View style={styles.row}>
+              <TouchableOpacity
+                style={[styles.chip, !timeSlot && styles.chipActive]}
+                onPress={() => setTimeSlot(undefined)}
+              >
+                <Text style={[styles.chipText, !timeSlot && styles.chipTextActive]}>
+                  🔀 Tous
+                </Text>
+              </TouchableOpacity>
+              {TIME_SLOTS.map(s => (
+                <TouchableOpacity
+                  key={s.value}
+                  style={[styles.chip, timeSlot === s.value && styles.chipActive]}
+                  onPress={() => setTimeSlot(s.value)}
+                >
+                  <Text style={[styles.chipText, timeSlot === s.value && styles.chipTextActive]}>
+                    {s.icon} {s.label}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </View>

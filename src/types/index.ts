@@ -3,6 +3,8 @@
 export type Priority = 'high' | 'normal' | 'low';
 export type EnergyLevel = 'high' | 'medium' | 'low';
 export type Recurrence = 'none' | 'daily' | 'weekly' | 'monthly';
+// Créneau de travail de Maxence (alternance semaine A/B)
+export type TimeSlot = 'work' | 'evening-short' | 'evening-late' | 'weekend';
 
 export interface SubTask {
   id: string;
@@ -27,6 +29,8 @@ export interface Task {
   createdAt: string;
   completedAt?: string;
   subtasks?: SubTask[];
+  // Créneau de travail où cette tâche est réalisable
+  timeSlot?: TimeSlot;
 }
 
 export interface Project {

@@ -1,4 +1,4 @@
-// Onglet Tâches — vue par projet avec sections dépliables
+// Onglet Tâches — vue par projet avec sections dépliables et badges créneau
 import React, { useState, useRef } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
@@ -9,11 +9,16 @@ import { Colors, PriorityColors } from '../constants/colors';
 import { useAppData } from '../hooks/useAppData';
 import { Task, Project } from '../types';
 import { formatDateShort, isOverdue } from '../utils/dateUtils';
+import { getCurrentSlot, getWeekType, SLOT_META_PUBLIC } from '../utils/timeSlot';
 import TaskModal from '../components/TaskModal';
 import PomodoroModal from '../components/PomodoroModal';
 
 const PRIORITY_LABEL: Record<string, string> = {
   high: '🔴', normal: '🟡', low: '🔵',
+};
+
+const SLOT_ICON: Record<string, string> = {
+  work: '🏢', 'evening-short': '⚡', 'evening-late': '🌙', weekend: '🔥',
 };
 
 export default function TasksScreen() {
@@ -232,6 +237,9 @@ function SwipeableTask({ task, project, onEdit, onDelete, onComplete, onPomodoro
             </View>
             <View style={styles.taskCardMeta}>
               <Text style={styles.taskCardProject}>{project.emoji} {project.name}</Text>
+              {task.timeSlot && (
+                <Text style={styles.slotTag}>{SLOT_ICON[task.timeSlot]} {SLOT_META_PUBLIC[task.timeSlot]?.label ?? ''}</Text>
+              )}
               {task.dueDate && (
                 <Text style={[styles.taskCardDate, isOverdue(task.dueDate) && styles.overdue]}>
                   📅 {formatDateShort(task.dueDate)}
@@ -329,6 +337,7 @@ const styles = StyleSheet.create({
   taskCardDate: { color: Colors.textMuted, fontSize: 12 },
   overdue: { color: Colors.danger },
   taskTag: { color: Colors.accent, fontSize: 11, opacity: 0.8 },
+  slotTag: { color: Colors.textMuted, fontSize: 11, fontStyle: 'italic' },
   pomodoroBtn: { padding: 14 },
   pomodoroBtnText: { fontSize: 16 },
 });

@@ -1,28 +1,39 @@
-// Onglet Claude IA — interface chat style iMessage sombre
-import React, { useState, useRef, useCallback } from 'react';
+// Onglet Claude IA — interface chat style iMessage sombre avec contexte créneau
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, ScrollView, TextInput, TouchableOpacity,
   StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator,
-  Animated,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { Colors } from '../constants/colors';
 import { useAppData } from '../hooks/useAppData';
 import { Message } from '../types';
 import { sendMessage } from '../utils/claudeApi';
-
-const QUICK_PROMPTS = [
-  { icon: '🎯', text: 'Quelles sont mes 3 priorités aujourd\'hui ?' },
-  { icon: '📅', text: 'Planifie ma semaine' },
-  { icon: '📊', text: 'Résume ma semaine' },
-  { icon: '⚡', text: 'J\'ai 30 minutes — que faire ?' },
-];
+import { getCurrentSlotInfo, SlotInfo } from '../utils/timeSlot';
 
 export default function ClaudeScreen() {
   const { data, addMessage, clearChat } = useAppData();
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [slotInfo, setSlotInfo] = useState<SlotInfo>(getCurrentSlotInfo());
   const scrollRef = useRef<ScrollView>(null);
+
+  // Rafraîchir le créneau toutes les minutes
+  useEffect(() => {
+    const interval = setInterval(() => setSlotInfo(getCurrentSlotInfo()), 60_000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Suggestions contextuelles selon le créneau
+  const QUICK_PROMPTS = [
+    {
+      icon: slotInfo.icon,
+      text: `Que puis-je faire maintenant ? (${slotInfo.label}, ${slotInfo.timeRemaining} restantes)`,
+    },
+    { icon: '🎯', text: 'Quelles sont mes 3 priorités aujourd\'hui ?' },
+    { icon: '📅', text: `Planifie ma semaine ${slotInfo.weekType}` },
+    { icon: '📊', text: 'Résume ma semaine' },
+  ];
 
   const messages = data.chatHistory;
   const hasApiKey = !!data.settings.anthropicKey;
@@ -51,6 +62,7 @@ export default function ClaudeScreen() {
         messages,
         data.tasks,
         data.settings.anthropicKey,
+        slotInfo,
       );
       const assistantMsg: Message = {
         id: `msg_${Date.now()}_a`,
@@ -81,11 +93,19 @@ export default function ClaudeScreen() {
     >
       {/* Header */}
       <View style={styles.header}>
-        <View>
+        <View style={{ flex: 1 }}>
           <Text style={styles.headerTitle}>Claude IA 🤖</Text>
-          <Text style={styles.headerSub}>
-            {hasApiKey ? 'Connecté · Sonnet 4.6' : 'Mode démo — Clé API manquante'}
-          </Text>
+          <View style={styles.headerSubRow}>
+            <Text style={styles.headerSub}>
+              {hasApiKey ? 'Connecté · Sonnet 4.6' : 'Mode démo'}
+            </Text>
+            <View style={[styles.slotPill, { backgroundColor: `${slotInfo.color}20`, borderColor: `${slotInfo.color}50` }]}>
+              <Text style={[styles.slotPillText, { color: slotInfo.color }]}>
+                {slotInfo.icon} {slotInfo.label}
+                {slotInfo.timeRemainingMinutes > 0 ? ` · ${slotInfo.timeRemaining}` : ''}
+              </Text>
+            </View>
+          </View>
         </View>
         {messages.length > 0 && (
           <TouchableOpacity onPress={clearChat} style={styles.clearBtn}>
@@ -200,7 +220,13 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1, borderBottomColor: Colors.cardBorder,
   },
   headerTitle: { color: Colors.textPrimary, fontSize: 20, fontWeight: '700' },
-  headerSub: { color: Colors.textSecondary, fontSize: 12, marginTop: 2 },
+  headerSubRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 },
+  headerSub: { color: Colors.textSecondary, fontSize: 12 },
+  slotPill: {
+    paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8,
+    borderWidth: 1,
+  },
+  slotPillText: { fontSize: 11, fontWeight: '600' },
   clearBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 10, backgroundColor: Colors.surfaceElevated },
   clearBtnText: { color: Colors.textSecondary, fontSize: 13 },
   messages: { flex: 1 },
