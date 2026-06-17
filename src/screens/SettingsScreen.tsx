@@ -10,8 +10,9 @@ import { exportData, resetData } from '../utils/storage';
 import { Project } from '../types';
 
 export default function SettingsScreen() {
-  const { data, updateSettings, addProject, deleteProject, refreshData } = useAppData();
+  const { data, updateSettings, addProject, deleteProject, refreshData, syncNotion, syncStatus } = useAppData();
   const [apiKey, setApiKey] = useState(data.settings.anthropicKey);
+  const [notionToken, setNotionToken] = useState(data.settings.notionToken);
   const [briefingTime, setBriefingTime] = useState(data.settings.briefingTime);
   const [reviewTime, setReviewTime] = useState(data.settings.weeklyReviewTime);
   const [newProject, setNewProject] = useState('');
@@ -20,10 +21,16 @@ export default function SettingsScreen() {
   async function handleSaveSettings() {
     await updateSettings({
       anthropicKey: apiKey.trim(),
+      notionToken: notionToken.trim(),
       briefingTime,
       weeklyReviewTime: reviewTime,
     });
     Alert.alert('Sauvegardé', 'Paramètres mis à jour.');
+  }
+
+  async function handleSyncNow() {
+    await handleSaveSettings();
+    await syncNotion();
   }
 
   async function handlePomodoroDuration(duration: number) {
@@ -69,7 +76,32 @@ export default function SettingsScreen() {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <Text style={styles.screenTitle}>⚙️ Paramètres</Text>
 
-      {/* Clé API */}
+      {/* Notion */}
+      <Section title="📄 Notion">
+        <Text style={styles.inputLabel}>Token Notion</Text>
+        <TextInput
+          style={styles.input}
+          value={notionToken}
+          onChangeText={setNotionToken}
+          placeholder="secret_..."
+          placeholderTextColor={Colors.textMuted}
+          secureTextEntry
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+        <Text style={styles.hint}>Paramètres → Mes intégrations sur notion.so</Text>
+        <TouchableOpacity
+          style={[styles.syncBtn, syncStatus === 'syncing' && styles.syncBtnDisabled]}
+          onPress={handleSyncNow}
+          disabled={syncStatus === 'syncing'}
+        >
+          <Text style={styles.syncBtnText}>
+            {syncStatus === 'syncing' ? '⏳ Sync en cours...' : '🔄 Synchroniser maintenant'}
+          </Text>
+        </TouchableOpacity>
+      </Section>
+
+      {/* Clé API Claude */}
       <Section title="🤖 Claude IA">
         <Text style={styles.inputLabel}>Clé API Anthropic</Text>
         <TextInput
@@ -217,6 +249,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface, marginHorizontal: 16, borderRadius: 14,
     borderWidth: 1, borderColor: Colors.cardBorder, padding: 16, marginBottom: 16,
   },
+  syncBtn: {
+    marginTop: 12, padding: 12, borderRadius: 10,
+    backgroundColor: 'rgba(34,201,122,0.12)', borderWidth: 1, borderColor: Colors.success,
+    alignItems: 'center',
+  },
+  syncBtnDisabled: { opacity: 0.5 },
+  syncBtnText: { color: Colors.success, fontSize: 14, fontWeight: '600' },
   inputLabel: { color: Colors.textSecondary, fontSize: 13, marginBottom: 8 },
   input: {
     backgroundColor: Colors.surfaceElevated, borderRadius: 10,

@@ -19,16 +19,22 @@ export default function App() {
 
   useEffect(() => {
     if (!appDataState.loading) {
-      initNotifications();
+      initApp();
     }
   }, [appDataState.loading]);
 
-  async function initNotifications() {
+  async function initApp() {
+    // Notifications push
     const granted = await requestPermissions();
-    if (!granted) return;
-    const { settings } = appDataState.data;
-    await scheduleDailyBriefing(settings.briefingTime);
-    await scheduleWeeklyReview(settings.weeklyReviewTime, settings.weeklyReviewDay);
+    if (granted) {
+      const { settings } = appDataState.data;
+      await scheduleDailyBriefing(settings.briefingTime);
+      await scheduleWeeklyReview(settings.weeklyReviewTime, settings.weeklyReviewDay);
+    }
+    // Synchronisation Notion au démarrage (en arrière-plan)
+    appDataState.syncNotion().catch(() => {
+      // Best effort — l'UI affiche l'erreur via SyncIndicator
+    });
   }
 
   if (appDataState.loading) {

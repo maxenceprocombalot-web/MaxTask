@@ -1,4 +1,4 @@
-// Onglet Aujourd'hui — focus du jour avec badge créneau et filtrage intelligent
+// Onglet Aujourd'hui — focus du jour avec badge créneau, filtrage intelligent et sync Notion
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet,
@@ -8,20 +8,30 @@ import * as Haptics from 'expo-haptics';
 import { Colors } from '../constants/colors';
 import { useAppData } from '../hooks/useAppData';
 import { getTodayKey, getTodayFull, formatDateShort } from '../utils/dateUtils';
-import { getCurrentSlotInfo, filterTasksBySlot, SlotInfo, SlotKey } from '../utils/timeSlot';
+import { getCurrentSlotInfo, filterTasksBySlot, SlotInfo } from '../utils/timeSlot';
 import { Task } from '../types';
 import TaskModal from '../components/TaskModal';
 import PomodoroModal from '../components/PomodoroModal';
 import BriefingModal from '../components/BriefingModal';
+import SyncIndicator from '../components/SyncIndicator';
 
 export default function TodayScreen() {
-  const { data, toggleTask, addTask, updateTask } = useAppData();
+  const { data, toggleTask, addTask, updateTask, syncNotion, syncStatus, lastSyncAt, syncError } = useAppData();
   const [showModal, setShowModal] = useState(false);
   const [editTask, setEditTask] = useState<Task | null>(null);
   const [pomodoroTask, setPomodoroTask] = useState<Task | null>(null);
   const [showBriefing, setShowBriefing] = useState(false);
   const [slotInfo, setSlotInfo] = useState<SlotInfo>(getCurrentSlotInfo());
   const [showAllTasks, setShowAllTasks] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Pull-to-refresh → sync Notion
+  async function handleRefresh() {
+    setRefreshing(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await syncNotion();
+    setRefreshing(false);
+  }
 
   // Rafraîchir le créneau toutes les minutes
   useEffect(() => {
@@ -60,7 +70,22 @@ export default function TodayScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+      {/* Indicateur de sync Notion — flotte au-dessus */}
+      <SyncIndicator status={syncStatus} lastSyncAt={lastSyncAt} error={syncError} />
+
+      <ScrollView
+        style={styles.scroll}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={Colors.accent}
+            title="Sync Notion..."
+            titleColor={Colors.textSecondary}
+          />
+        }
+      >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>

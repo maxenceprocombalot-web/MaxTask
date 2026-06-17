@@ -31,6 +31,8 @@ export interface Task {
   subtasks?: SubTask[];
   // Créneau de travail où cette tâche est réalisable
   timeSlot?: TimeSlot;
+  // ID de la page Notion correspondante (undefined = pas encore synchronisé)
+  notionId?: string;
 }
 
 export interface Project {
@@ -61,7 +63,10 @@ export interface AppSettings {
   weeklyReviewDay: number;
   pomodoroDuration: number;
   anthropicKey: string;
+  notionToken: string;
 }
+
+export type SyncStatus = 'idle' | 'syncing' | 'success' | 'error';
 
 export interface AppData {
   tasks: Task[];

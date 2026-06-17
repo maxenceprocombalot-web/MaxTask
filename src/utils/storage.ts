@@ -11,6 +11,7 @@ const DEFAULT_SETTINGS: AppSettings = {
   weeklyReviewDay: 5,
   pomodoroDuration: 25,
   anthropicKey: '',
+  notionToken: '',
 };
 
 // Tâches d'exemple pour la première ouverture — catégorisées par créneau
