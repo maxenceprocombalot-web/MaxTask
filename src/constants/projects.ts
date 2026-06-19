@@ -6,7 +6,7 @@ export const DEFAULT_PROJECTS: Project[] = [
   { id: 'fittrack', name: 'FitTrack IA', emoji: '💪' },
   { id: 'maxtask', name: 'MaxTask', emoji: '📝' },
   { id: 'ecole', name: 'École / Alternance Peillet Location', emoji: '🎓' },
-  { id: 'dealtylab', name: 'DealtyLab', emoji: '🌿' },
+  { id: 'dealtylab', name: 'Vitalis Nutrition', emoji: '🌿' },
   { id: 'perso', name: 'Perso', emoji: '💡' },
 ];
 

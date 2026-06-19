@@ -10,6 +10,7 @@ web-build/
 
 # Variables d'environnement — NE JAMAIS committer
 .env
+.env*
 .env.local
 .env.*.local
 

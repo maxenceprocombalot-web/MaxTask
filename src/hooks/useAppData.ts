@@ -24,6 +24,8 @@ interface AppDataContextType {
   updateTask: (id: string, updates: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   toggleTask: (id: string) => Promise<void>;
+  // Version qui throw sur erreur Notion pour rollback côté composant
+  toggleTaskOptimistic: (id: string) => Promise<void>;
   addProject: (project: Project) => Promise<void>;
   deleteProject: (id: string) => Promise<void>;
   addMessage: (message: Message) => Promise<void>;
@@ -230,7 +232,7 @@ export function useAppDataState(): AppDataContextType {
       return next;
     });
 
-    // Mettre à jour le statut dans Notion
+    // Mettre à jour le statut dans Notion (best effort, ne throw pas)
     const token = getNotionToken();
     if (!token || !toggledTask?.notionId) return;
     try {
@@ -243,7 +245,59 @@ export function useAppDataState(): AppDataContextType {
         completed: toggledTask.completed,
       });
     } catch {
-      // Best effort
+      // Best effort — erreur silencieuse
+    }
+  }, []);
+
+  // Variante avec rollback sur erreur Notion — throw pour que le composant gère l'UI
+  const toggleTaskOptimistic = useCallback(async (id: string): Promise<void> => {
+    // Sauvegarder l'état précédent pour rollback
+    const prevTask = dataRef.current.tasks.find(t => t.id === id);
+    let toggledTask: Task | undefined;
+
+    // Mise à jour optimiste immédiate
+    setData(prev => {
+      const tasks = prev.tasks.map(t => {
+        if (t.id !== id) return t;
+        const completed = !t.completed;
+        const updated: Task = {
+          ...t,
+          completed,
+          completedAt: completed ? new Date().toISOString() : undefined,
+        };
+        toggledTask = updated;
+        return updated;
+      });
+      const next = { ...prev, tasks };
+      saveData(next);
+      return next;
+    });
+
+    if (!toggledTask) return;
+
+    // Sync Notion — throw sur erreur (déclenche rollback côté composant)
+    const token = getNotionToken();
+    if (!token || !toggledTask.notionId) return;
+
+    try {
+      let dbSchema = schemaRef.current;
+      if (!dbSchema) {
+        dbSchema = await fetchDbSchema(token);
+        setSchema(dbSchema);
+      }
+      await updateNotionPage(token, dbSchema, toggledTask.notionId, {
+        completed: toggledTask.completed,
+      });
+    } catch (err) {
+      // Rollback : restaurer l'état précédent
+      if (prevTask) {
+        setData(prev => {
+          const next = { ...prev, tasks: prev.tasks.map(t => t.id === id ? prevTask : t) };
+          saveData(next);
+          return next;
+        });
+      }
+      throw err; // Remonter l'erreur au composant
     }
   }, []);
 
@@ -299,6 +353,7 @@ export function useAppDataState(): AppDataContextType {
     updateTask,
     deleteTask,
     toggleTask,
+    toggleTaskOptimistic,
     addProject,
     deleteProject,
     addMessage,
