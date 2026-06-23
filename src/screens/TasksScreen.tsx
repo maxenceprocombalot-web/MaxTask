@@ -13,6 +13,7 @@ import { getTodayKey, formatDateShort } from '../utils/dateUtils';
 import TaskModal from '../components/TaskModal';
 import PomodoroModal from '../components/PomodoroModal';
 import SyncIndicator from '../components/SyncIndicator';
+import TaskDetailSheet from '../components/TaskDetailSheet';
 
 // ─── Utilitaires date ─────────────────────────────────────────────────────────
 
@@ -144,12 +145,13 @@ function SlotSectionHeader({ section }: { section: TaskSection }) {
 
 const PRIORITY_LABEL: Record<string, string> = { high: '🔴', normal: '🟡', low: '🔵' };
 
-function TaskRow({ task, project, hasError, onToggle, onEdit, onPomodoro }: {
+function TaskRow({ task, project, hasError, onToggle, onPress, onLongPress, onPomodoro }: {
   task: Task;
   project?: Project;
   hasError: boolean;
   onToggle: () => void;
-  onEdit: () => void;
+  onPress: () => void;
+  onLongPress: () => void;
   onPomodoro: () => void;
 }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -165,7 +167,8 @@ function TaskRow({ task, project, hasError, onToggle, onEdit, onPomodoro }: {
   return (
     <TouchableOpacity
       style={[styles.taskRow, hasError && styles.taskRowError]}
-      onLongPress={onEdit}
+      onPress={onPress}
+      onLongPress={onLongPress}
       activeOpacity={0.75}
     >
       {/* Checkbox avec animation bounce */}
@@ -250,6 +253,8 @@ export default function TasksScreen() {
   const [editTask,      setEditTask]      = useState<Task | null>(null);
   const [pomodoroTask,  setPomodoroTask]  = useState<Task | null>(null);
   const [toggleErrors,  setToggleErrors]  = useState<Set<string>>(new Set());
+  // Fiche détail
+  const [detailTask,    setDetailTask]    = useState<Task | null>(null);
 
   const weekDays     = useMemo(() => getWeekDays(weekOffset), [weekOffset]);
   const sections     = useFilteredTasks(selectedDate);
@@ -293,6 +298,41 @@ export default function TasksScreen() {
   function handlePomodoroComplete(taskId: string) {
     const task = data.tasks.find(t => t.id === taskId);
     if (task) updateTask(taskId, { pomodoroCount: task.pomodoroCount + 1 });
+  }
+
+  function handleToggleSubtask(taskId: string, subtaskId: string) {
+    const task = data.tasks.find(t => t.id === taskId);
+    if (!task?.subtasks) return;
+    const updatedSubtasks = task.subtasks.map(s =>
+      s.id === subtaskId ? { ...s, completed: !s.completed } : s,
+    );
+    updateTask(taskId, { subtasks: updatedSubtasks });
+    // Mettre à jour aussi la tâche affichée dans la fiche
+    setDetailTask(prev => prev?.id === taskId ? { ...prev, subtasks: updatedSubtasks } : prev);
+  }
+
+  function handleOpenDetail(task: Task) {
+    setDetailTask(task);
+  }
+
+  function handleDetailComplete() {
+    if (!detailTask) return;
+    handleToggle(detailTask);
+    // Mettre à jour l'état local de la fiche
+    setDetailTask(prev => prev ? { ...prev, completed: !prev.completed } : prev);
+  }
+
+  function handleDetailEdit() {
+    if (!detailTask) return;
+    setEditTask(detailTask);
+    setDetailTask(null);
+    setShowModal(true);
+  }
+
+  function handleDetailPomodoro() {
+    if (!detailTask) return;
+    setPomodoroTask(detailTask);
+    setDetailTask(null);
   }
 
   // ─── ListHeaderComponent mémoïsé ────────────────────────────────────────────
@@ -354,7 +394,8 @@ export default function TasksScreen() {
             project={data.projects.find(p => p.id === item.project)}
             hasError={toggleErrors.has(item.id)}
             onToggle={() => handleToggle(item)}
-            onEdit={() => { setEditTask(item); setShowModal(true); }}
+            onPress={() => handleOpenDetail(item)}
+            onLongPress={() => { setEditTask(item); setShowModal(true); }}
             onPomodoro={() => setPomodoroTask(item)}
           />
         )}
@@ -379,6 +420,17 @@ export default function TasksScreen() {
         task={pomodoroTask}
         pomodoroDuration={data.settings.pomodoroDuration}
         onPomodoroComplete={handlePomodoroComplete}
+      />
+
+      <TaskDetailSheet
+        visible={!!detailTask}
+        task={detailTask}
+        project={data.projects.find(p => p.id === detailTask?.project)}
+        onClose={() => setDetailTask(null)}
+        onComplete={handleDetailComplete}
+        onEdit={handleDetailEdit}
+        onPomodoro={handleDetailPomodoro}
+        onToggleSubtask={handleToggleSubtask}
       />
     </View>
   );
