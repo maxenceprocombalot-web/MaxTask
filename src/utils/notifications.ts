@@ -1,8 +1,12 @@
 // Gestion des notifications push — daily briefing & weekly review
+// expo-notifications n'est pas supporté sur web : chaque fonction est no-op sur cette plateforme
+import { Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 
-Notifications.setNotificationHandler({
+const isWeb = Platform.OS === 'web';
+
+if (!isWeb) Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldShowBanner: true,
@@ -13,7 +17,7 @@ Notifications.setNotificationHandler({
 });
 
 export async function requestPermissions(): Promise<boolean> {
-  if (!Device.isDevice) return false;
+  if (isWeb || !Device.isDevice) return false;
   const { status: existing } = await Notifications.getPermissionsAsync();
   if (existing === 'granted') return true;
   const { status } = await Notifications.requestPermissionsAsync();
@@ -21,6 +25,7 @@ export async function requestPermissions(): Promise<boolean> {
 }
 
 export async function scheduleDailyBriefing(timeStr: string): Promise<void> {
+  if (isWeb) return;
   const [hour, minute] = timeStr.split(':').map(Number);
   await Notifications.cancelScheduledNotificationAsync('daily-briefing').catch(() => {});
   await Notifications.scheduleNotificationAsync({
@@ -39,6 +44,7 @@ export async function scheduleDailyBriefing(timeStr: string): Promise<void> {
 }
 
 export async function scheduleWeeklyReview(timeStr: string, weekday: number): Promise<void> {
+  if (isWeb) return;
   const [hour, minute] = timeStr.split(':').map(Number);
   await Notifications.cancelScheduledNotificationAsync('weekly-review').catch(() => {});
   await Notifications.scheduleNotificationAsync({
@@ -58,6 +64,7 @@ export async function scheduleWeeklyReview(timeStr: string, weekday: number): Pr
 }
 
 export async function sendLocalNotification(title: string, body: string): Promise<void> {
+  if (isWeb) return;
   await Notifications.scheduleNotificationAsync({
     content: { title, body },
     trigger: null,
