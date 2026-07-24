@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator,
 } from 'react-native';
-import { Colors } from '../constants/colors';
+import { Fonts, Colors } from '../constants/colors';
 import { useAppData } from '../hooks/useAppData';
 import { getLast7Days, getDayLabel, getTodayKey } from '../utils/dateUtils';
 import { Task } from '../types';
@@ -201,13 +201,14 @@ function InsightRow({ icon, label, value }: { icon: string; label: string; value
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   screenTitle: {
-    color: Colors.textPrimary, fontSize: 28, fontWeight: '700',
+    color: Colors.textPrimary, fontSize: 20, fontWeight: '700',
+    fontFamily: Fonts.mono, textTransform: 'uppercase' as const, letterSpacing: 1.3, textShadowColor: Colors.glow, textShadowRadius: 14,
     paddingHorizontal: 20, paddingTop: 60, paddingBottom: 20,
   },
   scoreCard: {
     marginHorizontal: 16, marginBottom: 12, padding: 20,
     backgroundColor: Colors.accentLight, borderRadius: 14,
-    borderWidth: 1, borderColor: 'rgba(124,109,250,0.25)',
+    borderWidth: 1, borderColor: Colors.cardBorderActive,
     flexDirection: 'row', alignItems: 'center',
   },
   scoreLeft: { alignItems: 'center', marginRight: 24 },

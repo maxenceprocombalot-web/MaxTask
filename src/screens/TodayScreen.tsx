@@ -5,7 +5,7 @@ import {
   Animated, RefreshControl,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Colors } from '../constants/colors';
+import { Fonts, Colors } from '../constants/colors';
 import { useAppData } from '../hooks/useAppData';
 import { getTodayKey, getTodayFull, formatDateShort } from '../utils/dateUtils';
 import { getCurrentSlotInfo, filterTasksBySlot, SlotInfo } from '../utils/timeSlot';
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
   },
   headerLeft: { flex: 1 },
   headerRight: { alignItems: 'flex-end' },
-  greeting: { color: Colors.textPrimary, fontSize: 26, fontWeight: '700' },
+  greeting: { color: Colors.textPrimary, fontSize: 21, fontWeight: '700', fontFamily: Fonts.mono, textTransform: 'uppercase', letterSpacing: 1.3, textShadowColor: Colors.glow, textShadowRadius: 14 },
   date: { color: Colors.textSecondary, fontSize: 13, marginTop: 4 },
   scoreLabel: { color: Colors.textSecondary, fontSize: 12 },
   scoreText: { color: Colors.textPrimary, fontSize: 28, fontWeight: '700' },
@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
   sectionHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12,
   },
-  sectionTitle: { color: Colors.textPrimary, fontSize: 17, fontWeight: '600', marginBottom: 12 },
+  sectionTitle: { color: Colors.textSecondary, fontSize: 12, fontWeight: '700', marginBottom: 12, fontFamily: Fonts.mono, textTransform: 'uppercase', letterSpacing: 1.3, },
   sectionSubtitle: { color: Colors.textSecondary, fontSize: 13 },
   emptyMIT: {
     padding: 24, borderRadius: 14, borderWidth: 1,
@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
 
   mitCard: {
     backgroundColor: Colors.accentLight, borderRadius: 14,
-    borderWidth: 1, borderColor: 'rgba(124,109,250,0.25)',
+    borderWidth: 1, borderColor: 'rgba(124,58,237,0.32)',
     marginBottom: 10, overflow: 'hidden',
   },
   mitCheckArea: { flexDirection: 'row', alignItems: 'flex-start', padding: 16 },
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
   },
   mitActions: {
     flexDirection: 'row', justifyContent: 'flex-end',
-    borderTopWidth: 1, borderTopColor: 'rgba(124,109,250,0.15)',
+    borderTopWidth: 1, borderTopColor: 'rgba(124,58,237,0.18)',
     paddingHorizontal: 12, paddingVertical: 8, gap: 4,
   },
   actionBtn: { padding: 8 },

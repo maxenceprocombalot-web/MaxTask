@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start', marginTop: 10,
     backgroundColor: Colors.accentLight, borderRadius: 8,
     paddingHorizontal: 10, paddingVertical: 4,
-    borderWidth: 1, borderColor: 'rgba(124,109,250,0.3)',
+    borderWidth: 1, borderColor: 'rgba(124,58,237,0.42)',
   },
   mitBadgeText: { color: Colors.accent, fontSize: 12, fontWeight: '600' },
 
@@ -323,7 +323,7 @@ const styles = StyleSheet.create({
   tag: {
     backgroundColor: Colors.accentLight, borderRadius: 14,
     paddingHorizontal: 10, paddingVertical: 4,
-    borderWidth: 1, borderColor: 'rgba(124,109,250,0.25)',
+    borderWidth: 1, borderColor: 'rgba(124,58,237,0.32)',
   },
   tagText: { color: Colors.accent, fontSize: 12, fontWeight: '500' },
 

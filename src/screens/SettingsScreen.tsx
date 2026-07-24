@@ -4,7 +4,7 @@ import {
   View, Text, ScrollView, TextInput, TouchableOpacity,
   StyleSheet, Alert, Share,
 } from 'react-native';
-import { Colors } from '../constants/colors';
+import { Fonts, Colors } from '../constants/colors';
 import { useAppData } from '../hooks/useAppData';
 import { exportData, resetData } from '../utils/storage';
 import { Project } from '../types';
@@ -236,13 +236,14 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
   screenTitle: {
-    color: Colors.textPrimary, fontSize: 28, fontWeight: '700',
+    color: Colors.textPrimary, fontSize: 20, fontWeight: '700',
+    fontFamily: Fonts.mono, textTransform: 'uppercase' as const, letterSpacing: 1.3, textShadowColor: Colors.glow, textShadowRadius: 14,
     paddingHorizontal: 20, paddingTop: 60, paddingBottom: 20,
   },
   section: { marginBottom: 8 },
   sectionTitle: {
     color: Colors.textSecondary, fontSize: 12, fontWeight: '600',
-    letterSpacing: 1, textTransform: 'uppercase',
+    letterSpacing: 1.3, textTransform: 'uppercase', fontFamily: Fonts.mono,
     paddingHorizontal: 20, paddingBottom: 8,
   },
   sectionContent: {

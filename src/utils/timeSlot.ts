@@ -77,7 +77,7 @@ const SLOT_META: Record<SlotKey, { icon: string; label: string; color: string; d
   work: {
     icon: '🏢',
     label: 'Au boulot',
-    color: Colors.textSecondary,
+    color: Colors.cyan,
     description: 'Tâches légères depuis le PC',
   },
   'evening-short': {
@@ -101,7 +101,7 @@ const SLOT_META: Record<SlotKey, { icon: string; label: string; color: string; d
   'off-hours': {
     icon: '😴',
     label: 'Temps libre',
-    color: Colors.textMuted,
+    color: '#a5b4fc',
     description: 'Soirée & récupération',
   },
 };

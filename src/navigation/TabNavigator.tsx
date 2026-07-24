@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Colors } from '../constants/colors';
+import { Fonts, Colors } from '../constants/colors';
 import TodayScreen from '../screens/TodayScreen';
 import TasksScreen from '../screens/TasksScreen';
 import ClaudeScreen from '../screens/ClaudeScreen';
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
   tabLabel: {
-    color: Colors.textMuted, fontSize: 10, fontWeight: '500',
+    color: Colors.textMuted, fontSize: 9, fontWeight: '700', fontFamily: Fonts.mono, textTransform: 'uppercase' as const, letterSpacing: 1.1,
   },
   tabLabelActive: {
     color: Colors.accent,

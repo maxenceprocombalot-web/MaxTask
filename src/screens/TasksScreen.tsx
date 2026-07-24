@@ -5,7 +5,7 @@ import {
   StyleSheet, RefreshControl, Animated,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Colors } from '../constants/colors';
+import { Fonts, Colors } from '../constants/colors';
 import { useAppData } from '../hooks/useAppData';
 import { useFilteredTasks, FOCUS_PROJECT_IDS, TaskSection } from '../hooks/useFilteredTasks';
 import { Task, Project } from '../types';
@@ -448,7 +448,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: 20, paddingTop: 60, paddingBottom: 14,
   },
-  screenTitle: { color: Colors.textPrimary, fontSize: 26, fontWeight: '700' },
+  screenTitle: { color: Colors.textPrimary, fontSize: 20, fontWeight: '700', fontFamily: Fonts.mono, textTransform: 'uppercase', letterSpacing: 1.3, textShadowColor: Colors.glow, textShadowRadius: 14 },
   screenSub:   { color: Colors.textMuted, fontSize: 16, marginTop: 3, letterSpacing: 4 },
   addBtn: {
     width: 36, height: 36, borderRadius: 18,

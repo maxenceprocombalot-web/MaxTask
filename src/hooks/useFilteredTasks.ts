@@ -30,10 +30,10 @@ export type SlotSectionKey = 'work' | 'evening-short' | 'evening-late' | 'other'
 const SECTION_META: Record<SlotSectionKey, {
   title: string; subtitle: string; icon: string; color: string; order: number;
 }> = {
-  work:            { title: 'Boulot',     subtitle: '8h – 17h',  icon: '🏢', color: '#6b7280', order: 0 },
-  'evening-short': { title: 'Soir court', subtitle: '18h – 20h', icon: '⚡', color: '#f07830', order: 1 },
-  'evening-late':  { title: 'Soir tard',  subtitle: '20h – 00h', icon: '🌙', color: '#7c6dfa', order: 2 },
-  other:           { title: 'Journée',    subtitle: 'Sans heure', icon: '📋', color: '#565d7a', order: 3 },
+  work:            { title: 'Boulot',     subtitle: '8h – 17h',  icon: '🏢', color: '#22d3ee', order: 0 },
+  'evening-short': { title: 'Soir court', subtitle: '18h – 20h', icon: '⚡', color: '#f59e0b', order: 1 },
+  'evening-late':  { title: 'Soir tard',  subtitle: '20h – 00h', icon: '🌙', color: '#7c3aed', order: 2 },
+  other:           { title: 'Journée',    subtitle: 'Sans heure', icon: '📋', color: '#a5b4fc', order: 3 },
 };
 
 // ─── Détermine la section d'une tâche ────────────────────────────────────────

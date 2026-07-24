@@ -5,7 +5,7 @@ import {
   StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { Colors } from '../constants/colors';
+import { Fonts, Colors } from '../constants/colors';
 import { useAppData } from '../hooks/useAppData';
 import { Message } from '../types';
 import { sendMessage } from '../utils/claudeApi';
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20, paddingTop: 60, paddingBottom: 16,
     borderBottomWidth: 1, borderBottomColor: Colors.cardBorder,
   },
-  headerTitle: { color: Colors.textPrimary, fontSize: 20, fontWeight: '700' },
+  headerTitle: { color: Colors.textPrimary, fontSize: 17, fontWeight: '700', fontFamily: Fonts.mono, textTransform: 'uppercase', letterSpacing: 1.3, textShadowColor: Colors.glow, textShadowRadius: 14 },
   headerSubRow: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4 },
   headerSub: { color: Colors.textSecondary, fontSize: 12 },
   slotPill: {

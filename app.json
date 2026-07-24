@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "splash": {
-      "backgroundColor": "#080a0e"
+      "backgroundColor": "#07090f"
     },
     "ios": {
       "supportsTablet": false,
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#080a0e",
+        "backgroundColor": "#07090f",
         "foregroundImage": "./assets/android-icon-foreground.png"
       },
       "package": "com.maxence.maxtask"
@@ -28,7 +28,7 @@
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
-          "color": "#7c6dfa"
+          "color": "#7c3aed"
         }
       ]
     ],
@@ -36,7 +36,7 @@
       "favicon": "./assets/favicon.png",
       "bundler": "metro",
       "output": "single",
-      "backgroundColor": "#080a0e"
+      "backgroundColor": "#07090f"
     },
     "extra": {
       "eas": {
