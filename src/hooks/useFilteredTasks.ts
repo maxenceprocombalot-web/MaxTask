@@ -69,7 +69,7 @@ function sortByTime(tasks: Task[]): Task[] {
 
 // ─── Filtre : seulement les 3 projets focus, jamais École/Peillet ────────────
 
-function isFocusTask(task: Task): boolean {
+export function isFocusTask(task: Task): boolean {
   if (EXCLUDED_PROJECT_IDS.has(task.project)) return false;
   return FOCUS_PROJECT_IDS.includes(task.project as FocusProjectId);
 }

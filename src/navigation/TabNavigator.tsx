@@ -14,7 +14,7 @@ const Tab = createBottomTabNavigator();
 function TabBar({ state, descriptors, navigation }: any) {
   const tabs = [
     { name: 'Aujourd\'hui', icon: '⚡', activeIcon: '⚡' },
-    { name: 'Tâches', icon: '📋', activeIcon: '📋' },
+    { name: 'Planning', icon: '🗓', activeIcon: '🗓' },
     { name: 'Claude', icon: '🤖', activeIcon: '🤖' },
     { name: 'Stats', icon: '📊', activeIcon: '📊' },
   ];
@@ -55,7 +55,7 @@ export default function TabNavigator() {
       screenOptions={{ headerShown: false }}
     >
       <Tab.Screen name="Aujourd'hui" component={TodayScreen} />
-      <Tab.Screen name="Tâches" component={TasksScreen} />
+      <Tab.Screen name="Planning" component={TasksScreen} />
       <Tab.Screen name="Claude" component={ClaudeScreen} />
       <Tab.Screen name="Stats" component={StatsScreen} />
       <Tab.Screen name="Paramètres" component={SettingsScreen} />
