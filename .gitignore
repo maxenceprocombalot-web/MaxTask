@@ -31,3 +31,6 @@ yarn-error.log*
 *.key
 *.mobileprovision
 *.orig.*
+
+# Témoin local du hook Stop (état de journalisation, ne se partage pas)
+.claude/.cerveau-ok
