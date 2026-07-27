@@ -1,5 +1,19 @@
 {
   "enabledPlugins": {
     "expo@claude-plugins-official": true
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'd=\"${CLAUDE_PROJECT_DIR:-.}\"; bash \"$d/.claude/hooks/check-cerveau.sh\"'",
+            "timeout": 15,
+            "statusMessage": "Vérification cerveau"
+          }
+        ]
+      }
+    ]
   }
 }
