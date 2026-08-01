@@ -31,3 +31,12 @@ yarn-error.log*
 *.key
 *.mobileprovision
 *.orig.*
+
+# Témoins de l'ancien hook Stop (retiré le 01/08/2026). Conservés dans
+# .gitignore parce que les fichiers traînent encore sur les machines qui ont
+# tourné avec ce hook : sans ces lignes ils réapparaîtraient comme non suivis.
+.claude/.cerveau-ok
+.claude/.session-active
+
+# Journal du hook SessionEnd (local, une ligne par dépôt)
+.claude/.cerveau-depot.log

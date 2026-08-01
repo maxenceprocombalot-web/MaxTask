@@ -1,5 +1,46 @@
 {
+  "extraKnownMarketplaces": {
+    "superpowers-dev": {
+      "source": { "source": "github", "repo": "obra/superpowers" }
+    },
+    "thedotmack": {
+      "source": { "source": "github", "repo": "thedotmack/claude-mem" }
+    },
+    "impeccable": {
+      "source": { "source": "github", "repo": "pbakaus/impeccable" }
+    }
+  },
   "enabledPlugins": {
-    "expo@claude-plugins-official": true
+    "expo@claude-plugins-official": true,
+    "superpowers@superpowers-dev": true,
+    "claude-mem@thedotmack": true,
+    "impeccable@impeccable": true
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'd=\"${CLAUDE_PROJECT_DIR:-.}\"; bash \"$d/.claude/hooks/cerveau-lecture.sh\"'",
+            "timeout": 10,
+            "statusMessage": "Lecture du cerveau"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'd=\"${CLAUDE_PROJECT_DIR:-.}\"; bash \"$d/.claude/hooks/cerveau-fin.sh\"'",
+            "timeout": 30,
+            "statusMessage": "Dépôt de la session au cerveau"
+          }
+        ]
+      }
+    ]
   }
 }
