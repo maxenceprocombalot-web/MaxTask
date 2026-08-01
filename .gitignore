@@ -37,3 +37,6 @@ yarn-error.log*
 # tourné avec ce hook : sans ces lignes ils réapparaîtraient comme non suivis.
 .claude/.cerveau-ok
 .claude/.session-active
+
+# Journal du hook SessionEnd (local, une ligne par dépôt)
+.claude/.cerveau-depot.log

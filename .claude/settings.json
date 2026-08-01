@@ -29,6 +29,18 @@
           }
         ]
       }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'd=\"${CLAUDE_PROJECT_DIR:-.}\"; bash \"$d/.claude/hooks/cerveau-fin.sh\"'",
+            "timeout": 30,
+            "statusMessage": "Dépôt de la session au cerveau"
+          }
+        ]
+      }
     ]
   }
 }

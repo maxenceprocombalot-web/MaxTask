@@ -18,15 +18,22 @@
 #
 # ENTRETIEN : le primer doit être régénéré depuis le cerveau à chaque session,
 # sans quoi il vieillit en silence — et un primer périmé est pire qu'absent,
-# puisqu'il est lu avec confiance. Plus aucun hook ne le rappelle depuis le
-# 01/08/2026 (voir ci-dessous) : c'est à l'agent d'y penser en fin de session.
+# puisqu'il est lu avec confiance.
 #
-# CE HOOK EST LE SEUL QUI RESTE. Un hook Stop imposait aussi l'écriture au
-# cerveau ; Maxence l'a fait retirer le 01/08/2026 — il ne voulait pas être
-# bloqué en fin de session. Conséquence assumée : la lecture est mécanique,
-# l'écriture redevient une discipline. Si les souvenirs se mettent à manquer,
-# c'est la première cause à regarder, et l'historique du hook retiré est dans
-# git (fichier .claude/hooks/check-cerveau.sh, jusqu'au commit 7442fee).
+# IL PORTE AUSSI LA CONSIGNE DE DISTILLATION. Le hook SessionEnd
+# (cerveau-fin.sh) dépose le brut des sessions dans la table session_transcripts
+# du cerveau, mais un script shell ne sait pas résumer. C'est donc ici, au
+# démarrage, qu'on demande à l'agent — qui, lui, sait — de vider ce sas en
+# souvenirs propres. Les deux hooks ne valent que l'un par l'autre : le dépôt
+# sans la distillation accumule du verbatim, la distillation sans le dépôt n'a
+# rien à traiter.
+#
+# NI L'UN NI L'AUTRE NE BLOQUE. Un hook Stop imposait l'écriture au cerveau en
+# retenant la fin de session ; Maxence l'a fait retirer le 01/08/2026 — il ne
+# voulait pas être interrompu. Le couple SessionStart/SessionEnd rend le même
+# service en se plaçant AVANT et APRÈS la conversation, jamais en travers.
+# L'historique du hook retiré est dans git (.claude/hooks/check-cerveau.sh,
+# jusqu'au commit 7442fee).
 
 set -u
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
@@ -39,9 +46,26 @@ primer=".claude/cerveau-primer.md"
 # cassé : un hook muet vaut mieux qu'un hook qui fait échouer le démarrage.
 command -v jq >/dev/null 2>&1 || exit 0
 
-jq -Rs '{
+consigne='Second cerveau de Maxence — photo au démarrage. Lis-la avant de répondre ; pour toute question précise, interroge le projet Supabase brain-max (lgvtjqtytwyovllsqbgv) via le MCP.
+
+ENTRETIEN, une fois par session : vider le sas des sessions précédentes.
+    select id, created_at, project, user_turns, digest
+    from session_transcripts where not distilled order by created_at;
+Chaque ligne est le brut d'\''une session passée, déposé par le hook SessionEnd.
+Pour chacune : la DISTILLER en souvenirs denses dans `memories` (décisions et
+leurs raisons, faits nouveaux, ce qui a été tenté sans succès, livrables et
+leurs liens) — distiller, jamais recopier le verbatim —, mettre à jour le PRIMER
+du pôle concerné si son état a changé, puis marquer la ligne traitée :
+    update session_transcripts set distilled = true, distilled_at = now() where id = ...;
+S'\''il n'\''y a aucune ligne, enchaîner directement sur la demande de Maxence.
+Faire cet entretien avant de répondre, et le mentionner en une ligne s'\''il a
+produit des souvenirs — Maxence doit pouvoir savoir ce qui entre dans son cerveau.
+
+'
+
+jq -Rs --arg consigne "$consigne" '{
   hookSpecificOutput: {
     hookEventName: "SessionStart",
-    additionalContext: ("Second cerveau de Maxence — photo au démarrage. Lis-la avant de répondre ; pour toute question précise, interroge le projet Supabase brain-max (lgvtjqtytwyovllsqbgv) via le MCP.\n\n" + .)
+    additionalContext: ($consigne + .)
   }
 }' "$primer"
