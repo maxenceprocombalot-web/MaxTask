@@ -32,10 +32,13 @@ Reprise Entreprise.
 
 ## Les derniers souvenirs
 
+- **01/08** — Hook Stop retiré à la demande de Maxence (« enlève le blocage »,
+  commit `ac00698`). L'écriture au cerveau n'a plus de mécanisme : si les
+  souvenirs manquent, c'est la première cause à regarder. Une alternative non
+  bloquante n'a pas été explorée.
 - **01/08** — Lecture du cerveau rendue mécanique : hook `SessionStart` qui
-  injecte ce primer, hook Stop v4 qui compte les discussions et plus seulement
-  le code (commit `2f545bc`). Écarté : `brain-export` pour le primer (secret
-  partagé + 1500 souvenirs, illisible au démarrage).
+  injecte ce primer (commit `2f545bc`). Écarté : `brain-export` pour le primer
+  (secret partagé + 1500 souvenirs, illisible au démarrage).
 - **01/08** — 5 skills/plugins tiers installés dans MaxTask (superpowers,
   claude-mem, impeccable, task-observer, find-skills), commit `2d45aeb`.
 - **31/07** — Correction de cap : « je veux SIMPLIFIER mon travail, pas en
