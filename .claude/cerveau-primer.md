@@ -30,8 +30,12 @@ ailleurs.
 **Sans PRIMER à ce jour** : Création Contenu, Streakly, FitTrack IA,
 Reprise Entreprise.
 
-## Les 12 derniers souvenirs
+## Les derniers souvenirs
 
+- **01/08** — Lecture du cerveau rendue mécanique : hook `SessionStart` qui
+  injecte ce primer, hook Stop v4 qui compte les discussions et plus seulement
+  le code (commit `2f545bc`). Écarté : `brain-export` pour le primer (secret
+  partagé + 1500 souvenirs, illisible au démarrage).
 - **01/08** — 5 skills/plugins tiers installés dans MaxTask (superpowers,
   claude-mem, impeccable, task-observer, find-skills), commit `2d45aeb`.
 - **31/07** — Correction de cap : « je veux SIMPLIFIER mon travail, pas en
@@ -46,8 +50,10 @@ Reprise Entreprise.
 
 ## Les règles qui gouvernent le travail
 
-43 règles dans `core_context`. Celles qui mordent le plus souvent :
+44 règles dans `core_context`. Celles qui mordent le plus souvent :
 
+- **CE QUI N'EST PAS MÉCANIQUE NE TIENT PAS** — une consigne écrite ne
+  s'exécute pas, elle espère ; chercher qui exécute le réflexe.
 - **PREUVE AVANT « C'EST FAIT »** — un build qui compile ne prouve pas la mise en ligne.
 - **PLAN D'ABORD, ET RE-PLAN SI ÇA DÉRAPE**.
 - **ASSEMBLER AVANT DE CODER — et jamais de doublon**.
