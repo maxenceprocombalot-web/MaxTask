@@ -17,6 +17,19 @@
     "impeccable@impeccable": true
   },
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'd=\"${CLAUDE_PROJECT_DIR:-.}\"; bash \"$d/.claude/hooks/cerveau-lecture.sh\"'",
+            "timeout": 10,
+            "statusMessage": "Lecture du cerveau"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [

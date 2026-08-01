@@ -34,3 +34,7 @@ yarn-error.log*
 
 # Témoin local du hook Stop (état de journalisation, ne se partage pas)
 .claude/.cerveau-ok
+
+# Témoin de début de session posé par le hook SessionStart — local lui aussi :
+# c'est sa date qui fait compter les discussions, elle n'a de sens que sur la machine
+.claude/.session-active
