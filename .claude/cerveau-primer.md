@@ -36,8 +36,10 @@ Reprise Entreprise.
   SessionEnd qui dépose le brut dans `session_transcripts`, hook SessionStart
   qui demande de le distiller. Aucun des deux ne bloque. **Prouvé de bout en
   bout depuis une session web** le 01/08 à 12:02 UTC (ligne `host=vm` retrouvée
-  en base). Exige l'environnement **`MaxTask`** — sur `Default`, le dépôt échoue
-  en `http=000` : vérifier l'environnement avant de soupçonner le script.
+  en base), puis **porté sur `main`** le 01/08 (`957b4dd`) : toute session part
+  désormais avec, sans avoir à choisir de branche. Exige l'environnement
+  **`MaxTask`** — sur `Default`, le dépôt échoue en `http=000` : vérifier
+  l'environnement avant de soupçonner le script.
 - **01/08** — Hook Stop retiré à la demande de Maxence (« enlève le blocage »,
   commit `ac00698`), remplacé le jour même par le filet ci-dessus.
 - **01/08** — Lecture du cerveau rendue mécanique : hook `SessionStart` qui
