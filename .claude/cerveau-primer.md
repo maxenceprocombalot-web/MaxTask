@@ -32,10 +32,13 @@ Reprise Entreprise.
 
 ## Les derniers souvenirs
 
+- **01/08** — Filet de sauvegarde des sessions (commit `9c119b9`) : hook
+  SessionEnd qui dépose le brut dans `session_transcripts`, hook SessionStart
+  qui demande de le distiller. Aucun des deux ne bloque. **Ne marche pas encore
+  en session web** : `*.supabase.co` doit être autorisé dans la politique réseau
+  de l'environnement — action de Maxence, en attente.
 - **01/08** — Hook Stop retiré à la demande de Maxence (« enlève le blocage »,
-  commit `ac00698`). L'écriture au cerveau n'a plus de mécanisme : si les
-  souvenirs manquent, c'est la première cause à regarder. Une alternative non
-  bloquante n'a pas été explorée.
+  commit `ac00698`), remplacé le jour même par le filet ci-dessus.
 - **01/08** — Lecture du cerveau rendue mécanique : hook `SessionStart` qui
   injecte ce primer (commit `2f545bc`). Écarté : `brain-export` pour le primer
   (secret partagé + 1500 souvenirs, illisible au démarrage).
