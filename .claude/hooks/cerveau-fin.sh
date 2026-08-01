@@ -143,26 +143,38 @@ fi
 exit 0
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LIMITE CONNUE — CE HOOK NE COUVRE PAS ENCORE LES SESSIONS WEB (01/08/2026)
+# DÉPENDANCE À LA POLITIQUE RÉSEAU DE L'ENVIRONNEMENT — lire avant de débugger
 #
-# Vérifié : sur Claude Code web, tout le trafic sort par un proxy dont la
-# politique réseau n'autorise pas supabase.co. Le gateway répond 403 au CONNECT,
-# curl rend http=000, et la ligne « ÉCHEC » ci-dessus est ce qu'on obtient.
-# Constaté en direct sur ce dépôt, le 01/08/2026 :
+# Ce hook a besoin que *.supabase.co soit joignable depuis la session. Ce n'est
+# PAS acquis par défaut : les sessions Claude Code web sortent par un proxy dont
+# le niveau « Trusted » ne contient aucun domaine Supabase. Dans cet état, le
+# gateway répond 403 au CONNECT, curl rend http=000, et on obtient la ligne
+# « ÉCHEC » ci-dessus alors que la charge est parfaitement construite.
+#
+# C'est ce qui s'est passé le 01/08/2026 sur l'environnement « Default » :
 #   connect_rejected — gateway answered 403 to CONNECT
 #   host: lgvtjqtytwyovllsqbgv.supabase.co:443
-# Ce n'est PAS un défaut du script : la charge est construite correctement, elle
-# ne peut simplement pas sortir. Sur le Mac de Maxence, sans proxy, la requête
-# part normalement — mais ça n'a pas pu être prouvé depuis un conteneur.
 #
-# LE CORRECTIF EST CÔTÉ ENVIRONNEMENT, PAS CÔTÉ CODE : autoriser supabase.co
-# dans la politique réseau de l'environnement Claude Code web. Le dépôt HTTP
-# marchera alors partout, sans rien ajouter ici.
+# RÉSOLU le 01/08/2026 par un environnement dédié « MaxTask » : Network access
+# réglé sur Custom, *.supabase.co dans Allowed domains, et la case « Also
+# include default list of common package managers » cochée — sans elle on perd
+# npm, PyPI, GitHub et Ubuntu, et les sessions deviennent inutilisables.
+#
+# PREUVE (session web, conteneur cloud, 01/08/2026 12:02 UTC) : curl sur
+# /rest/v1/ rend 401 au lieu de 000 — 401 est la réponse normale de PostgREST
+# sans apikey, donc le tunnel TCP/TLS aboutit. Le hook lancé dans la foulée a
+# journalisé « déposé (2 tours, 1255 octets) », et la ligne correspondante a
+# été retrouvée dans session_transcripts (host=vm, 2 tours, 1201 octets).
+#
+# SI ÇA RECASSE UN JOUR, regarder d'abord ça : l'environnement sélectionné pour
+# la session (il doit afficher « MaxTask », pas « Default »). Un http=000 dans
+# le journal désigne le réseau, jamais le script.
 #
 # TESTÉ SANS SUCCÈS — un canal de secours par git (plomberie hash-object /
 # mktree / commit-tree, puis push d'un commit orphelin sur une branche dédiée)
 # a été écrit puis abandonné : le classifieur de sécurité l'a refusé, à raison.
 # Un hook qui pousse vers GitHub sans surveillance à chaque fin de session est
 # une action sortante non supervisée ; ça demande l'accord explicite de Maxence,
-# pas une décision d'agent. À ne reprendre que s'il le demande.
+# pas une décision d'agent. Devenu inutile depuis que le domaine est autorisé —
+# le correctif était côté environnement, pas côté code.
 # ─────────────────────────────────────────────────────────────────────────────
