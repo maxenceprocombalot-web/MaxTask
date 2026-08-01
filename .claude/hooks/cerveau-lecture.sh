@@ -14,19 +14,22 @@
 # POURQUOI UN FICHIER VERSIONNÉ ET PAS UN APPEL RÉSEAU : interroger Supabase
 # depuis un hook exigerait un secret partagé posé sur chaque machine, et
 # brain-export renvoie 1500 souvenirs — illisible au démarrage. Le fichier est
-# dans le dépôt : il survit au recyclage du conteneur, marche hors ligne, et se
-# régénère à chaque session (le hook Stop le rappelle).
+# dans le dépôt : il survit au recyclage du conteneur et marche hors ligne.
 #
-# Il stampe aussi .claude/.session-active, que le hook Stop lit pour savoir
-# qu'une session a eu lieu — c'est ce qui fait compter les DISCUSSIONS et pas
-# seulement les modifications de code.
+# ENTRETIEN : le primer doit être régénéré depuis le cerveau à chaque session,
+# sans quoi il vieillit en silence — et un primer périmé est pire qu'absent,
+# puisqu'il est lu avec confiance. Plus aucun hook ne le rappelle depuis le
+# 01/08/2026 (voir ci-dessous) : c'est à l'agent d'y penser en fin de session.
+#
+# CE HOOK EST LE SEUL QUI RESTE. Un hook Stop imposait aussi l'écriture au
+# cerveau ; Maxence l'a fait retirer le 01/08/2026 — il ne voulait pas être
+# bloqué en fin de session. Conséquence assumée : la lecture est mécanique,
+# l'écriture redevient une discipline. Si les souvenirs se mettent à manquer,
+# c'est la première cause à regarder, et l'historique du hook retiré est dans
+# git (fichier .claude/hooks/check-cerveau.sh, jusqu'au commit 7442fee).
 
 set -u
 cd "${CLAUDE_PROJECT_DIR:-.}" 2>/dev/null || exit 0
-
-# Témoin de session : sa date sert de « début de session » au hook Stop
-mkdir -p .claude 2>/dev/null
-: > .claude/.session-active 2>/dev/null
 
 primer=".claude/cerveau-primer.md"
 [ -f "$primer" ] || exit 0

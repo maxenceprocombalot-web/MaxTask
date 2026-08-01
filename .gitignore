@@ -32,9 +32,8 @@ yarn-error.log*
 *.mobileprovision
 *.orig.*
 
-# Témoin local du hook Stop (état de journalisation, ne se partage pas)
+# Témoins de l'ancien hook Stop (retiré le 01/08/2026). Conservés dans
+# .gitignore parce que les fichiers traînent encore sur les machines qui ont
+# tourné avec ce hook : sans ces lignes ils réapparaîtraient comme non suivis.
 .claude/.cerveau-ok
-
-# Témoin de début de session posé par le hook SessionStart — local lui aussi :
-# c'est sa date qui fait compter les discussions, elle n'a de sens que sur la machine
 .claude/.session-active
