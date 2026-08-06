@@ -1,7 +1,7 @@
 # Primer du second cerveau — injecté au démarrage de chaque session
 
 > Régénéré depuis Supabase `brain-max` (`lgvtjqtytwyovllsqbgv`) à chaque session.
-> Dernière régénération : 01/08/2026.
+> Dernière régénération : 06/08/2026.
 >
 > Ceci est une **photo**, pas la source. Pour toute question précise —
 > un contact, un devis, une tâche, un souvenir daté — interroger le cerveau
@@ -32,14 +32,26 @@ Reprise Entreprise.
 
 ## Les derniers souvenirs
 
+- **06/08** — **LE FILET DE SAUVEGARDE N'A JAMAIS SAUVEGARDÉ UNE VRAIE SESSION.**
+  Journal `.claude/.cerveau-depot.log` : 82 fins de session d'affilée en
+  `http=000`, du 01/08 12:41 au 06/08 21:55, jusqu'à 321 tours de Maxence jetés
+  d'un coup. `session_transcripts` ne porte qu'une ligne, le test manuel du
+  01/08. Cause re-mesurée le 06/08 : `connect_rejected — gateway answered 403 to
+  CONNECT` sur `lgvtjqtytwyovllsqbgv.supabase.co:443`. Le réglage réseau du
+  01/08 n'a pas tenu. **Seul Maxence peut le corriger** (environnement de session
+  = `MaxTask`, pas `Default`).
+  Deux correctifs posés le 06/08 pour que ça ne dépende plus de ce réglage :
+  le hook de fin **garde la charge sur le disque** (`.claude/sessions-en-attente/`)
+  au lieu de la jeter, et le hook de démarrage **crie la panne** au lieu de la
+  taire. Le rattrapage passe par le **MCP Supabase**, qui atteint le cerveau
+  même quand `curl` est bloqué (prouvé : insertion puis suppression d'une ligne
+  de test le 06/08 alors que `curl` rendait 000).
 - **01/08** — Filet de sauvegarde des sessions (commit `9c119b9`) : hook
   SessionEnd qui dépose le brut dans `session_transcripts`, hook SessionStart
-  qui demande de le distiller. Aucun des deux ne bloque. **Prouvé de bout en
-  bout depuis une session web** le 01/08 à 12:02 UTC (ligne `host=vm` retrouvée
-  en base), puis **porté sur `main`** le 01/08 (`957b4dd`) : toute session part
-  désormais avec, sans avoir à choisir de branche. Exige l'environnement
-  **`MaxTask`** — sur `Default`, le dépôt échoue en `http=000` : vérifier
-  l'environnement avant de soupçonner le script.
+  qui demande de le distiller. Aucun des deux ne bloque. Porté sur `main`
+  (`957b4dd`) : toute session part avec, sans avoir à choisir de branche.
+  La preuve prise ce jour-là était bonne — et la conclusion « résolu » fausse
+  dès le lendemain, voir l'entrée du 06/08 ci-dessus.
 - **01/08** — Hook Stop retiré à la demande de Maxence (« enlève le blocage »,
   commit `ac00698`), remplacé le jour même par le filet ci-dessus.
 - **01/08** — Lecture du cerveau rendue mécanique : hook `SessionStart` qui
@@ -64,6 +76,8 @@ Reprise Entreprise.
 - **CE QUI N'EST PAS MÉCANIQUE NE TIENT PAS** — une consigne écrite ne
   s'exécute pas, elle espère ; chercher qui exécute le réflexe.
 - **PREUVE AVANT « C'EST FAIT »** — un build qui compile ne prouve pas la mise en ligne.
+- **UNE PREUVE VAUT POUR L'INSTANT OÙ ELLE EST PRISE** — ce qui repose sur un
+  réglage extérieur au dépôt se re-vérifie à l'usage, et son échec doit se voir.
 - **PLAN D'ABORD, ET RE-PLAN SI ÇA DÉRAPE**.
 - **ASSEMBLER AVANT DE CODER — et jamais de doublon**.
 - **CHAQUE ERREUR DEVIENT UNE RÈGLE** (format RÈGLE — POURQUOI).

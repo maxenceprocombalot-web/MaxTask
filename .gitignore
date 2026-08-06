@@ -40,3 +40,8 @@ yarn-error.log*
 
 # Journal du hook SessionEnd (local, une ligne par dépôt)
 .claude/.cerveau-depot.log
+
+# Sessions que le hook n'a pas pu envoyer et qui attendent d'être montées au
+# cerveau par le MCP. Elles contiennent le verbatim de Maxence : elles vont dans
+# `session_transcripts`, jamais dans le dépôt.
+.claude/sessions-en-attente/

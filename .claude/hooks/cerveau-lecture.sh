@@ -46,6 +46,79 @@ primer=".claude/cerveau-primer.md"
 # cassé : un hook muet vaut mieux qu'un hook qui fait échouer le démarrage.
 command -v jq >/dev/null 2>&1 || exit 0
 
+# --- État du filet de sauvegarde ----------------------------------------------
+# Le hook SessionEnd échoue en silence : il ne peut rien afficher (la session est
+# déjà fermée) et se contente d'écrire dans .cerveau-depot.log. Personne ne lit
+# ce fichier. Entre le 01/08 et le 06/08/2026, 82 fins de session d'affilée ont
+# donc été perdues sans que rien ne le signale, alors que le dépôt était réputé
+# « résolu ». C'est ici — au démarrage, le seul moment où quelqu'un lit — qu'on
+# remonte la panne. Une panne silencieuse n'est pas une panne, c'est un mensonge.
+alerte=""
+journal=".claude/.cerveau-depot.log"
+if [ -f "$journal" ]; then
+  # Échecs consécutifs depuis le dernier dépôt réussi + horodatage et code du dernier.
+  etat="$(awk '
+    /déposé/  { n = 0; next }
+    /ÉCHEC/   { n++; last = $1 " " $2; code = $4 }
+    END       { printf "%d|%s|%s", n + 0, last, code }
+  ' "$journal" 2>/dev/null)"
+  nb="${etat%%|*}"
+  reste="${etat#*|}"
+  quand="${reste%%|*}"
+  code="${reste##*|}"
+
+  if [ "${nb:-0}" -gt 0 ]; then
+    # Heredoc non quoté : les variables s'expandent, les apostrophes françaises
+    # et les guillemets restent lisibles tels quels.
+    cause="cause à chercher dans .claude/.cerveau-depot.log"
+    if [ "$code" = "http=000" ]; then
+      cause="$(cat <<'EOF'
+http=000 = le proxy de la session refuse *.supabase.co. C'est L'ENVIRONNEMENT,
+  jamais le script : il doit être « MaxTask » (Network access = Custom,
+  *.supabase.co dans Allowed domains, case « default list of common package
+  managers » cochée), et non « Default ». Se vérifie en une commande :
+  curl -s -o /dev/null -w "%{http_code}" https://lgvtjqtytwyovllsqbgv.supabase.co/rest/v1/
+  401 = le tunnel passe. 000 = il est coupé.
+EOF
+)"
+    fi
+    # Les sessions que le hook de fin n'a pas pu envoyer attendent sur le disque.
+    # Le MCP Supabase, lui, sort par un autre canal que curl : il atteint le
+    # cerveau même quand le proxy bloque. C'est donc à l'agent de les monter.
+    attente=".claude/sessions-en-attente"
+    rattrapage=""
+    nb_att="$(ls -1 "$attente"/*.json 2>/dev/null | wc -l | tr -d ' ')"
+    if [ "${nb_att:-0}" -gt 0 ]; then
+      rattrapage="$(cat <<EOF
+
+RATTRAPAGE POSSIBLE TOUT DE SUITE : $nb_att session(s) attendent dans $attente/.
+Chaque fichier est la charge JSON prête (session_id, project, host, end_reason,
+digest, user_turns). Le MCP Supabase n'emprunte pas le réseau du conteneur : il
+passe même quand curl échoue. Donc, avant de répondre : lire ces fichiers,
+insérer chacun dans session_transcripts via le MCP, vérifier la ligne en base,
+puis SUPPRIMER le fichier monté. Ensuite seulement, les distiller comme ci-dessous.
+EOF
+)"
+    fi
+    if [ "$nb" -gt 1 ]; then
+      compte="$nb fins de session d'affilée n'ont RIEN déposé"
+    else
+      compte="la dernière fin de session n'a RIEN déposé"
+    fi
+    alerte="$(cat <<EOF
+⚠ LE FILET DE SAUVEGARDE DES SESSIONS EST EN PANNE.
+$compte dans le cerveau (dernier échec
+le $quand, $code). Autant de sessions dont la matière est perdue à la fermeture.
+  $cause
+Le sas est donc vide pour une mauvaise raison : ne pas en conclure « rien à
+distiller ». LE DIRE À MAXENCE dès la première réponse — lui seul peut changer
+l'environnement de la session, et tant que ce n'est pas fait, chaque session qui
+se ferme dépend du repli sur disque ci-dessous.$rattrapage
+EOF
+)"
+  fi
+fi
+
 consigne='Second cerveau de Maxence — photo au démarrage. Lis-la avant de répondre ; pour toute question précise, interroge le projet Supabase brain-max (lgvtjqtytwyovllsqbgv) via le MCP.
 
 ENTRETIEN, une fois par session : vider le sas des sessions précédentes.
@@ -63,9 +136,11 @@ produit des souvenirs — Maxence doit pouvoir savoir ce qui entre dans son cerv
 
 '
 
-jq -Rs --arg consigne "$consigne" '{
+# L'alerte passe AVANT la consigne : si le filet est en panne, c'est la première
+# chose à savoir — la consigne d'entretien qui suit porte sur un sas resté vide.
+jq -Rs --arg alerte "$alerte" --arg consigne "$consigne" '{
   hookSpecificOutput: {
     hookEventName: "SessionStart",
-    additionalContext: ($consigne + .)
+    additionalContext: ((if $alerte == "" then "" else $alerte + "\n\n" end) + $consigne + .)
   }
 }' "$primer"

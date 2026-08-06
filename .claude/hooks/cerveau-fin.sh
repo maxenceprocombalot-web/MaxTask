@@ -135,9 +135,31 @@ code="$(curl -s -o /dev/null -w '%{http_code}' \
 if [ "$code" = "201" ] || [ "$code" = "200" ]; then
   echo "$horodatage  déposé ($nb_tours tours, $poids octets)" >>"$journal" 2>/dev/null
 else
-  # Échec = la matière est perdue avec le conteneur. On le consigne pour que la
-  # cause soit trouvable, mais on ne dérange personne : la session est finie.
-  echo "$horodatage  ÉCHEC http=${code:-?} ($nb_tours tours) — non sauvegardé" >>"$journal" 2>/dev/null
+  # ÉCHEC — REPLI SUR LE DISQUE, ajouté le 06/08/2026.
+  #
+  # POURQUOI : entre le 01/08 et le 06/08, 82 fins de session d'affilée ont
+  # échoué en http=000 et la matière a été jetée à chaque fois. Or le réseau du
+  # conteneur n'est pas le seul chemin vers le cerveau : l'agent, lui, l'atteint
+  # par le MCP Supabase, qui sort par un autre canal et fonctionne même quand
+  # curl est bloqué. Il suffit donc de GARDER la charge : la session suivante la
+  # déposera par le MCP. Sans ce repli, on dépend d'un réglage d'environnement
+  # que seul Maxence peut faire, et tout ce qui se dit entre-temps est perdu.
+  #
+  # Le dossier est ignoré par git : ces fichiers contiennent le verbatim de
+  # Maxence, ils vont au cerveau, pas dans un dépôt public.
+  # Le fichier porte l'identifiant de session SEUL, sans horodatage : le hook peut
+  # tourner plusieurs fois pour une même session (fermeture, /clear, reprise), et
+  # on veut alors ÉCRASER la charge précédente, pas en empiler une copie. Sinon la
+  # même conversation serait déposée cinq fois dans le cerveau — constaté en test
+  # le 06/08/2026. La dernière écriture est aussi la plus complète : elle contient
+  # tous les tours des précédentes.
+  attente="${CLAUDE_PROJECT_DIR:-.}/.claude/sessions-en-attente"
+  if mkdir -p "$attente" 2>/dev/null && cp "$tmp/charge.json" \
+       "$attente/${session_id:-sans-id}.json" 2>/dev/null; then
+    echo "$horodatage  ÉCHEC http=${code:-?} ($nb_tours tours) — gardé en attente sur le disque" >>"$journal" 2>/dev/null
+  else
+    echo "$horodatage  ÉCHEC http=${code:-?} ($nb_tours tours) — non sauvegardé" >>"$journal" 2>/dev/null
+  fi
 fi
 
 exit 0
@@ -155,20 +177,41 @@ exit 0
 #   connect_rejected — gateway answered 403 to CONNECT
 #   host: lgvtjqtytwyovllsqbgv.supabase.co:443
 #
-# RÉSOLU le 01/08/2026 par un environnement dédié « MaxTask » : Network access
-# réglé sur Custom, *.supabase.co dans Allowed domains, et la case « Also
+# CRU RÉSOLU le 01/08/2026 par un environnement dédié « MaxTask » : Network
+# access réglé sur Custom, *.supabase.co dans Allowed domains, et la case « Also
 # include default list of common package managers » cochée — sans elle on perd
 # npm, PyPI, GitHub et Ubuntu, et les sessions deviennent inutilisables.
+# La preuve d'alors était réelle : le 01/08 à 12:02 UTC, curl sur /rest/v1/
+# rendait 401 (réponse normale de PostgREST sans apikey, donc tunnel ouvert), le
+# hook journalisait « déposé (2 tours, 1255 octets) » et la ligne était retrouvée
+# en base.
 #
-# PREUVE (session web, conteneur cloud, 01/08/2026 12:02 UTC) : curl sur
-# /rest/v1/ rend 401 au lieu de 000 — 401 est la réponse normale de PostgREST
-# sans apikey, donc le tunnel TCP/TLS aboutit. Le hook lancé dans la foulée a
-# journalisé « déposé (2 tours, 1255 octets) », et la ligne correspondante a
-# été retrouvée dans session_transcripts (host=vm, 2 tours, 1201 octets).
+# ÇA N'A PAS TENU — constaté le 06/08/2026, et c'est la leçon principale de ce
+# fichier. Le journal ne contient QUE des échecs depuis ce test : 82 fins de
+# session d'affilée en http=000, du 01/08 12:41 au 06/08 21:55, jusqu'à 321 tours
+# de Maxence jetés d'un coup. La table session_transcripts ne porte toujours
+# qu'une seule ligne : le test manuel du 01/08. Autrement dit, ce hook n'a JAMAIS
+# sauvegardé une vraie session.
 #
-# SI ÇA RECASSE UN JOUR, regarder d'abord ça : l'environnement sélectionné pour
-# la session (il doit afficher « MaxTask », pas « Default »). Un http=000 dans
-# le journal désigne le réseau, jamais le script.
+# MESURÉ le 06/08/2026 21:56 UTC depuis le conteneur de session :
+#   curl … /rest/v1/  → 000
+#   $HTTPS_PROXY/__agentproxy/status → recentRelayFailures:
+#     { kind: connect_rejected,
+#       detail: "gateway answered 403 to CONNECT (policy denial or upstream failure)",
+#       host: "lgvtjqtytwyovllsqbgv.supabase.co:443" }
+# Exactement la panne de départ. Le réglage d'environnement n'était donc pas
+# acquis pour de bon : soit la session ne tourne pas sur « MaxTask », soit la
+# liste de domaines s'est perdue. Seul Maxence peut le corriger.
+#
+# RÈGLE — une preuve de bon fonctionnement vaut pour l'instant où elle est prise,
+# jamais pour la suite. POURQUOI : ici la preuve était bonne et la conclusion
+# (« résolu ») fausse dès le lendemain, parce qu'elle portait sur un réglage
+# extérieur au dépôt, que rien dans le dépôt ne peut tenir. Ce qui dépend d'un
+# réglage qu'on ne contrôle pas doit être RE-VÉRIFIÉ à chaque usage, et son échec
+# doit se voir. D'où les deux ajouts du 06/08 : le repli sur disque ci-dessus, et
+# l'alerte au démarrage dans cerveau-lecture.sh.
+#
+# UN http=000 DANS LE JOURNAL DÉSIGNE LE RÉSEAU, JAMAIS LE SCRIPT.
 #
 # TESTÉ SANS SUCCÈS — un canal de secours par git (plomberie hash-object /
 # mktree / commit-tree, puis push d'un commit orphelin sur une branche dédiée)
