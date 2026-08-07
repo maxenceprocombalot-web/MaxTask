@@ -84,19 +84,26 @@ EOF
     fi
     # Les sessions que le hook de fin n'a pas pu envoyer attendent sur le disque.
     # Le MCP Supabase, lui, sort par un autre canal que curl : il atteint le
-    # cerveau même quand le proxy bloque. C'est donc à l'agent de les monter.
+    # cerveau même quand le proxy bloque. Mais il n'y fait pas passer un verbatim :
+    # tout ce qui traverse le MCP traverse d'abord l'agent, qui régénère le texte
+    # au lieu de le copier. On saute donc l'étape session_transcripts et on
+    # distille directement depuis le fichier — c'est de toute façon le but.
     attente=".claude/sessions-en-attente"
     rattrapage=""
     nb_att="$(ls -1 "$attente"/*.json 2>/dev/null | wc -l | tr -d ' ')"
     if [ "${nb_att:-0}" -gt 0 ]; then
       rattrapage="$(cat <<EOF
 
-RATTRAPAGE POSSIBLE TOUT DE SUITE : $nb_att session(s) attendent dans $attente/.
-Chaque fichier est la charge JSON prête (session_id, project, host, end_reason,
-digest, user_turns). Le MCP Supabase n'emprunte pas le réseau du conteneur : il
-passe même quand curl échoue. Donc, avant de répondre : lire ces fichiers,
-insérer chacun dans session_transcripts via le MCP, vérifier la ligne en base,
-puis SUPPRIMER le fichier monté. Ensuite seulement, les distiller comme ci-dessous.
+RATTRAPAGE À FAIRE TOUT DE SUITE : $nb_att session(s) attendent dans $attente/.
+Chaque fichier est la charge JSON d'une session (session_id, project, host,
+end_reason, digest, user_turns) que le hook de fin n'a pas pu envoyer.
+Ne pas chercher à remonter ce digest tel quel dans session_transcripts : il ne
+passerait pas par le réseau mais par l'agent, qui reformule au lieu de copier —
+un verbatim qui traverse un modèle n'est plus un verbatim.
+Faire directement ce à quoi le sas sert : lire le fichier sur le disque, en tirer
+des souvenirs denses dans \`memories\` (mêmes consignes que l'entretien ci-dessous),
+vérifier d'abord ce qui y figure déjà pour ne rien redoubler, puis supprimer le
+fichier une fois distillé. Le dire à Maxence en une ligne.
 EOF
 )"
     fi
