@@ -79,6 +79,27 @@ jq -r 'select(.type=="user") | .message.content as $c
   | grep -vE '^(Continue from where you left off\.|\[Request interrupted by user)' \
   | grep -vE '^\s*$' > "$tmp/tours.txt" 2>/dev/null
 
+# --- Caviardage des secrets ---------------------------------------------------
+# POURQUOI : le verbatim de Maxence contient ses secrets. Constaté le 07/08/2026
+# en relisant la charge en attente de la session du 06/08 — elle transportait en
+# clair un mot de passe d'application Shopify (shpss_…), deux jetons atkn_… et
+# les 64 caractères de HERMES_SECRET, que Maxence avait collés dans le chat pour
+# déboguer. Sans ce filtre, chaque fin de session recopiait ces valeurs dans le
+# cerveau, où elles restaient en clair et indexées pour toujours.
+#
+# CE FILTRE EST UN FILET, PAS UNE GARANTIE : il attrape les formes connues. Un
+# secret d'un format inédit passera. C'est pourquoi la règle « ne jamais faire
+# transiter un secret dans la conversation » reste la vraie protection — ceci
+# n'en est que le rattrapage.
+sed -E -i \
+  -e 's#(shpss|shpat|shpca|shppa|atkn|sbp|ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{16,}#\1_[SECRET CAVIARDÉ]#g' \
+  -e 's#(github_pat|sk-ant|sk|xoxb|xoxp|xoxa|xapp)-[A-Za-z0-9_-]{20,}#\1-[SECRET CAVIARDÉ]#g' \
+  -e 's#AIza[0-9A-Za-z_-]{35}#AIza[SECRET CAVIARDÉ]#g' \
+  -e 's#eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}#[JWT CAVIARDÉ]#g' \
+  -e 's#(token|secret|key|password|passwd|pwd|apikey)([=:"'"'"' ]{1,4})[A-Za-z0-9_+/.-]{24,}#\1\2[SECRET CAVIARDÉ]#gI' \
+  -e 's#\b[0-9a-f]{32,}\b#[CHAÎNE HEX CAVIARDÉE]#g' \
+  "$tmp/tours.txt" 2>/dev/null
+
 nb_tours="$(wc -l < "$tmp/tours.txt" 2>/dev/null | tr -d ' ')"
 tours="$(cat "$tmp/tours.txt" 2>/dev/null)"
 
