@@ -40,3 +40,7 @@ yarn-error.log*
 
 # Journal du hook SessionEnd (local, une ligne par dépôt)
 .claude/.cerveau-depot.log
+
+# Charges dont le dépôt a échoué, gardées pour ne pas perdre la matière.
+# Contiennent le brut d'une session : jamais versionné.
+.claude/.cerveau-en-attente/

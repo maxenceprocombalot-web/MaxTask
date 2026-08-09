@@ -123,41 +123,74 @@ jq -n --rawfile d "$tmp/digest.txt" \
 [ -s "$tmp/charge.json" ] || { echo "$horodatage  ÉCHEC construction de la charge" >>"$journal" 2>/dev/null; exit 0; }
 poids="$(wc -c < "$tmp/digest.txt" | tr -d ' ')"
 
-code="$(curl -s -o /dev/null -w '%{http_code}' \
-  --max-time 20 \
-  -X POST "$SUPABASE_URL" \
-  -H "apikey: $SUPABASE_KEY" \
-  -H "Authorization: Bearer $SUPABASE_KEY" \
-  -H "Content-Type: application/json" \
-  -H "Prefer: return=minimal" \
-  --data-binary "@$tmp/charge.json" 2>/dev/null)"
+# DEUX TENTATIVES, ET POURQUOI : sur Claude Code web tout le trafic sort par un
+# proxy local (HTTPS_PROXY=127.0.0.1:…). Ce hook s'exécute session déjà finie,
+# donc APRÈS le démontage de ce proxy : curl ne peut plus s'y connecter, sort en
+# code 7 et rend http=000. C'est la cause des 75 échecs consécutifs du 06 au
+# 09/08/2026 — pas un blocage de supabase.co, qui répond normalement. La sortie
+# directe fonctionne, elle : on retente donc en ignorant le proxy.
+depose() {
+  curl -s -o "$tmp/reponse.txt" -w '%{http_code}' \
+    --max-time 20 "$@" \
+    -X POST "$SUPABASE_URL" \
+    -H "apikey: $SUPABASE_KEY" \
+    -H "Authorization: Bearer $SUPABASE_KEY" \
+    -H "Content-Type: application/json" \
+    -H "Prefer: return=minimal" \
+    --data-binary "@$tmp/charge.json" 2>/dev/null
+}
+
+voie=""
+code="$(depose)"
+if [ "$code" = "000" ]; then
+  code="$(depose --noproxy '*')"
+  voie=" (sans proxy)"
+fi
 
 if [ "$code" = "201" ] || [ "$code" = "200" ]; then
-  echo "$horodatage  déposé ($nb_tours tours, $poids octets)" >>"$journal" 2>/dev/null
+  echo "$horodatage  déposé$voie ($nb_tours tours, $poids octets)" >>"$journal" 2>/dev/null
 else
-  # Échec = la matière est perdue avec le conteneur. On le consigne pour que la
-  # cause soit trouvable, mais on ne dérange personne : la session est finie.
-  echo "$horodatage  ÉCHEC http=${code:-?} ($nb_tours tours) — non sauvegardé" >>"$journal" 2>/dev/null
+  # On journalise le CORPS de la réponse, pas seulement le code. Un « http=401 »
+  # nu n'apprend rien ; « 42501 row-level security » aurait fait gagner neuf
+  # jours. Et on garde la charge sur disque au lieu de la perdre : sur le Mac
+  # elle survit, dans le conteneur web elle part avec lui — mais alors le
+  # journal dit au moins pourquoi.
+  motif="$(head -c 300 "$tmp/reponse.txt" 2>/dev/null | tr '\n' ' ')"
+  attente="${CLAUDE_PROJECT_DIR:-.}/.claude/.cerveau-en-attente"
+  mkdir -p "$attente" 2>/dev/null &&
+    cp "$tmp/charge.json" "$attente/$(date '+%Y%m%dT%H%M%S').json" 2>/dev/null
+  echo "$horodatage  ÉCHEC http=${code:-?} ($nb_tours tours) — ${motif:-aucune réponse HTTP} — charge gardée dans .claude/.cerveau-en-attente/" >>"$journal" 2>/dev/null
 fi
 
 exit 0
 
 # ─────────────────────────────────────────────────────────────────────────────
-# LIMITE CONNUE — CE HOOK NE COUVRE PAS ENCORE LES SESSIONS WEB (01/08/2026)
+# DIAGNOSTIC CORRIGÉ LE 09/08/2026 — CE QUI PRÉCÉDAIT ICI ÉTAIT FAUX
 #
-# Vérifié : sur Claude Code web, tout le trafic sort par un proxy dont la
-# politique réseau n'autorise pas supabase.co. Le gateway répond 403 au CONNECT,
-# curl rend http=000, et la ligne « ÉCHEC » ci-dessus est ce qu'on obtient.
-# Constaté en direct sur ce dépôt, le 01/08/2026 :
-#   connect_rejected — gateway answered 403 to CONNECT
-#   host: lgvtjqtytwyovllsqbgv.supabase.co:443
-# Ce n'est PAS un défaut du script : la charge est construite correctement, elle
-# ne peut simplement pas sortir. Sur le Mac de Maxence, sans proxy, la requête
-# part normalement — mais ça n'a pas pu être prouvé depuis un conteneur.
+# Le commentaire d'origine affirmait que la politique réseau de l'environnement
+# refusait supabase.co (403 au CONNECT) et que « le correctif est côté
+# environnement, pas côté code ». C'est démenti : depuis ce conteneur,
+# supabase.co répond 200 en GET et 401 en POST, y compris avec un environnement
+# complètement vide, et 380 Ko passent en une seconde.
 #
-# LE CORRECTIF EST CÔTÉ ENVIRONNEMENT, PAS CÔTÉ CODE : autoriser supabase.co
-# dans la politique réseau de l'environnement Claude Code web. Le dépôt HTTP
-# marchera alors partout, sans rien ajouter ici.
+# Il y avait DEUX pannes empilées, indépendantes l'une de l'autre :
+#
+#   1. TRANSPORT — les 75 « http=000 » du 06 au 09/08. Le proxy local n'est plus
+#      joignable quand ce hook tourne (session finie = proxy démonté), curl sort
+#      en code 7. Reproduit à l'identique en pointant HTTPS_PROXY sur un port
+#      fermé. Corrigé ci-dessus par la seconde tentative sans proxy.
+#
+#   2. AUTORISATION — même sorti, le dépôt était refusé : 401 / 42501
+#      « new row violates row-level security policy ». La politique RLS visait le
+#      rôle `authenticated` alors que la clé publiable authentifie en `anon`.
+#      Elle était ainsi DEPUIS LA CRÉATION de la table : ce hook n'avait donc
+#      jamais réussi un seul dépôt. La ligne unique présente dans la table venait
+#      du MCP en service_role, qui contourne RLS — un faux feu vert.
+#      Corrigé par la migration `fix_session_transcripts_policy_role_anon`.
+#
+# LA LEÇON : un test manuel passé par un canal privilégié (MCP/service_role) ne
+# prouve rien sur le canal réel (curl + clé publiable). Tester par le chemin
+# qu'empruntera le code, pas par un raccourci d'agent.
 #
 # TESTÉ SANS SUCCÈS — un canal de secours par git (plomberie hash-object /
 # mktree / commit-tree, puis push d'un commit orphelin sur une branche dédiée)
