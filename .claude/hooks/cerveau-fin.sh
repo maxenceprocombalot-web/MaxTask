@@ -126,7 +126,7 @@ poids="$(wc -c < "$tmp/digest.txt" | tr -d ' ')"
 # DEUX TENTATIVES, ET POURQUOI : sur Claude Code web tout le trafic sort par un
 # proxy local (HTTPS_PROXY=127.0.0.1:…). Ce hook s'exécute session déjà finie,
 # donc APRÈS le démontage de ce proxy : curl ne peut plus s'y connecter, sort en
-# code 7 et rend http=000. C'est la cause des 75 échecs consécutifs du 06 au
+# code 7 et rend http=000. C'est la cause des 82 échecs du journal, du 01/08 au
 # 09/08/2026 — pas un blocage de supabase.co, qui répond normalement. La sortie
 # directe fonctionne, elle : on retente donc en ignorant le proxy.
 depose() {
@@ -175,22 +175,34 @@ exit 0
 #
 # Il y avait DEUX pannes empilées, indépendantes l'une de l'autre :
 #
-#   1. TRANSPORT — les 75 « http=000 » du 06 au 09/08. Le proxy local n'est plus
+#   1. TRANSPORT — les 82 « http=000 » du 01/08 au 09/08. Le proxy local n'est plus
 #      joignable quand ce hook tourne (session finie = proxy démonté), curl sort
 #      en code 7. Reproduit à l'identique en pointant HTTPS_PROXY sur un port
 #      fermé. Corrigé ci-dessus par la seconde tentative sans proxy.
 #
-#   2. AUTORISATION — même sorti, le dépôt était refusé : 401 / 42501
-#      « new row violates row-level security policy ». La politique RLS visait le
-#      rôle `authenticated` alors que la clé publiable authentifie en `anon`.
-#      Elle était ainsi DEPUIS LA CRÉATION de la table : ce hook n'avait donc
-#      jamais réussi un seul dépôt. La ligne unique présente dans la table venait
-#      du MCP en service_role, qui contourne RLS — un faux feu vert.
-#      Corrigé par la migration `fix_session_transcripts_policy_role_anon`.
+#   2. AUTORISATION — même sorti, le dépôt est refusé : 401 / 42501
+#      « new row violates row-level security policy ». La politique RLS vise le
+#      rôle `authenticated`, alors que la clé publiable authentifie en `anon`.
+#      CE N'EST PAS UN BUG : la migration `20260802210048 ferme_les_acces_anonymes`
+#      l'a décidé le 02/08, en écrivant son motif — « n'importe qui pouvait
+#      écrire dans la base du second cerveau » — et en laissant la suite à
+#      Maxence (« on ferme la porte, on tranche après »). Cet arbitrage n'a
+#      jamais été tranché : CETTE PANNE EST DONC TOUJOURS OUVERTE.
 #
-# LA LEÇON : un test manuel passé par un canal privilégié (MCP/service_role) ne
-# prouve rien sur le canal réel (curl + clé publiable). Tester par le chemin
-# qu'empruntera le code, pas par un raccourci d'agent.
+#      Le 09/08 j'ai rouvert `anon` en croyant corriger un bug, puis annulé
+#      (migration `restaure_fermeture_anon_session_transcripts`) une fois la
+#      migration du 02/08 lue. Deux voies possibles, au choix de Maxence :
+#      rouvrir `anon` en assumant que la clé publiable est publique, ou donner
+#      au hook une clé secrète par variable d'environnement.
+#
+# CE QUE LE HOOK A RÉELLEMENT FAIT : un seul dépôt réussi, le 01/08 à 12:02
+# (« déposé (2 tours, 1255 octets) », première ligne du journal, ligne retrouvée
+# en base). La fermeture du 02/08 puis la panne de transport l'ont tué ensuite.
+#
+# LA LEÇON : avant de qualifier un réglage de « bug », chercher s'il a été posé
+# exprès — l'historique des migrations porte le motif. J'ai affirmé « la
+# politique est ainsi depuis la création » sans l'avoir vérifié ; le journal et
+# la migration du 02/08 disaient le contraire.
 #
 # TESTÉ SANS SUCCÈS — un canal de secours par git (plomberie hash-object /
 # mktree / commit-tree, puis push d'un commit orphelin sur une branche dédiée)
