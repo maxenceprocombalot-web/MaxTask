@@ -1,7 +1,7 @@
 # Primer du second cerveau — injecté au démarrage de chaque session
 
 > Régénéré depuis Supabase `brain-max` (`lgvtjqtytwyovllsqbgv`) à chaque session.
-> Dernière régénération : 06/08/2026.
+> Dernière régénération : 10/08/2026.
 >
 > Ceci est une **photo**, pas la source. Pour toute question précise —
 > un contact, un devis, une tâche, un souvenir daté — interroger le cerveau
@@ -23,15 +23,31 @@ bloque tout, dans cet ordre : domiciliation → DGCCRF → n° Compl'Alim → é
 
 **MaxTask / MAX BRAIN** (`maxtask`, dev) — app déployée sur maxtask.expo.app,
 dépôt `max-os` ; ce dépôt-ci (`MaxTask`) porte la méthode et les hooks.
-Blockers : secret `EXPO_TOKEN` vide dans max-os (pas de filet si EAS Workflows
-tombe) · synchro Obsidian en chemin absolu vers le Mac, échoue silencieusement
-ailleurs.
+Le déploiement web part tout seul à chaque push sur `main` et il est vert :
+`.github/workflows/deploy-web.yml`, runs 6 à 15, dernier le 09/08 à 15:27 UTC.
+`.eas/workflows/deploy-web.yml` n'a jamais tiré une seule fois — le chemin
+réel est GitHub Actions, pas EAS Workflows.
+Blockers : secret `SUPABASE_ACCESS_TOKEN` **vide** dans max-os — le workflow
+« Deploy Edge Functions » échoue à chaque push (2 runs, 2 échecs, « Access
+token not provided ») : aucune edge function ne part toute seule · synchro
+Obsidian en chemin absolu vers le Mac, échoue silencieusement ailleurs.
+**Résolu, ne plus y revenir** : `EXPO_TOKEN`, posé le 03/08, valide.
 
 **Sans PRIMER à ce jour** : Création Contenu, Streakly, FitTrack IA,
 Reprise Entreprise.
 
 ## Les derniers souvenirs
 
+- **10/08** — **`EXPO_TOKEN` : rien à réparer, le blocker était périmé de sept
+  jours.** Posé par Maxence le 03/08, il fonctionne — étape « Deploy to EAS
+  Hosting (production) » verte sur les runs 6 à 15, dernier le 09/08 à 15:27:33
+  UTC. Le secret réellement vide aujourd'hui est **`SUPABASE_ACCESS_TOKEN`** :
+  même famille d'erreur, workflow « Deploy Edge Functions », 2 runs / 2 échecs
+  (06/08 et 09/08). Le geste est celui de Maxence — un secret ne transite pas
+  par la conversation. **RÈGLE — un blocker se vérifie contre le système avant
+  d'être traité, jamais contre le primer :** le primer est une photo datée, et
+  une photo vieillit. Corollaire : trouver un secret CI vide doit déclencher la
+  revue de **tous** les secrets cités dans les workflows.
 - **06/08** — **LE FILET DE SAUVEGARDE N'A JAMAIS SAUVEGARDÉ UNE VRAIE SESSION.**
   Journal `.claude/.cerveau-depot.log` : 82 fins de session d'affilée en
   `http=000`, du 01/08 12:41 au 06/08 21:55, jusqu'à 321 tours de Maxence jetés
@@ -71,13 +87,15 @@ Reprise Entreprise.
 
 ## Les règles qui gouvernent le travail
 
-44 règles dans `core_context`. Celles qui mordent le plus souvent :
+87 règles dans `core_context`. Celles qui mordent le plus souvent :
 
 - **CE QUI N'EST PAS MÉCANIQUE NE TIENT PAS** — une consigne écrite ne
   s'exécute pas, elle espère ; chercher qui exécute le réflexe.
 - **PREUVE AVANT « C'EST FAIT »** — un build qui compile ne prouve pas la mise en ligne.
 - **UNE PREUVE VAUT POUR L'INSTANT OÙ ELLE EST PRISE** — ce qui repose sur un
   réglage extérieur au dépôt se re-vérifie à l'usage, et son échec doit se voir.
+- **UN BLOCKER SE VÉRIFIE CONTRE LE SYSTÈME AVANT D'ÊTRE TRAITÉ** — le primer
+  oriente, il ne prouve pas l'état ; un blocage levé y survit sinon des jours.
 - **PLAN D'ABORD, ET RE-PLAN SI ÇA DÉRAPE**.
 - **ASSEMBLER AVANT DE CODER — et jamais de doublon**.
 - **CHAQUE ERREUR DEVIENT UNE RÈGLE** (format RÈGLE — POURQUOI).
