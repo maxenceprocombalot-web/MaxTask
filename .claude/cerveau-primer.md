@@ -33,8 +33,8 @@ token not provided ») : aucune edge function ne part toute seule · synchro
 Obsidian en chemin absolu vers le Mac, échoue silencieusement ailleurs.
 **Résolu, ne plus y revenir** : `EXPO_TOKEN`, posé le 03/08, valide.
 
-**Sans PRIMER à ce jour** : Création Contenu, Streakly, FitTrack IA,
-Reprise Entreprise.
+**Sans PRIMER à ce jour** : Maxwel IA (ex-« Création Contenu », renommé le
+14/08), Streakly, FitTrack IA, Reprise Entreprise.
 
 ## Les derniers souvenirs
 
