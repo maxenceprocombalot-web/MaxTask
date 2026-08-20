@@ -27,17 +27,33 @@ Le déploiement web part tout seul à chaque push sur `main` et il est vert :
 `.github/workflows/deploy-web.yml`, runs 6 à 15, dernier le 09/08 à 15:27 UTC.
 `.eas/workflows/deploy-web.yml` n'a jamais tiré une seule fois — le chemin
 réel est GitHub Actions, pas EAS Workflows.
-Blockers : secret `SUPABASE_ACCESS_TOKEN` **vide** dans max-os — le workflow
-« Deploy Edge Functions » échoue à chaque push (2 runs, 2 échecs, « Access
-token not provided ») : aucune edge function ne part toute seule · synchro
-Obsidian en chemin absolu vers le Mac, échoue silencieusement ailleurs.
-**Résolu, ne plus y revenir** : `EXPO_TOKEN`, posé le 03/08, valide.
+Blocker : synchro Obsidian en chemin absolu vers le Mac, échoue silencieusement
+ailleurs.
+**Résolus, ne plus y revenir** : `EXPO_TOKEN`, posé le 03/08, valide ·
+`SUPABASE_ACCESS_TOKEN`, posé entre-temps — le workflow « Deploy Edge
+Functions » est vert sur les runs 4 à 10, du 19/08 12:46 au 20/08 09:22 UTC.
+Les fonctions edge partent donc toutes seules à chaque push touchant
+`supabase/functions/**` ; inutile de passer par le MCP Supabase pour déployer.
 
 **Sans PRIMER à ce jour** : Maxwel IA (ex-« Création Contenu », renommé le
 14/08), Streakly, FitTrack IA, Reprise Entreprise.
 
 ## Les derniers souvenirs
 
+- **20/08** — **Les quatre devis « toujours pas bons » étaient TRONQUÉS, pas mal
+  écrits.** `claude-brain` action `chat` plafonne sa sortie à
+  `maxOutputTokens: 1500` **en dur** ; le `max_tokens` envoyé par l'app n'était
+  jamais lu. 3 845 caractères générés contre plus de 9 000 dans le devis de
+  référence validé. Trois réécritures du prompt n'ont rien pu y faire. Le même
+  chemin imposait la persona Jarvis — « réponses courtes, lisibles à voix haute »
+  — l'exact contraire d'une commande de six pages. Correctif : action `compose`
+  (un appel, sans outils ni mémoire ni persona, plafond respecté, `finishReason`
+  renvoyée pour qu'un devis coupé lève une erreur). **RÈGLE — une sortie trop
+  courte se mesure contre son plafond avant d'être réécrite :** un paramètre
+  envoyé n'est pas un paramètre appliqué.
+  Au passage, le logo Axiom partait avec un **fond noir** : `extract_image()`
+  rend l'image sans son masque de transparence. On re-rastérise la zone dans la
+  page de référence. Contrôle en une ligne : `pixmap.pixel(0,0)`.
 - **10/08** — **`EXPO_TOKEN` : rien à réparer, le blocker était périmé de sept
   jours.** Posé par Maxence le 03/08, il fonctionne — étape « Deploy to EAS
   Hosting (production) » verte sur les runs 6 à 15, dernier le 09/08 à 15:27:33
