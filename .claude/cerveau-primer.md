@@ -1,8 +1,9 @@
 # Primer du second cerveau — injecté au démarrage de chaque session
 
 > Régénéré depuis Supabase `brain-max` (`lgvtjqtytwyovllsqbgv`) à chaque session.
-> Dernière régénération : 22/10/2026 au soir (la précédente datait du 10/08 : 73 jours
-> de photo périmée, qui affirmait encore « SUPABASE_ACCESS_TOKEN résolu »).
+> Dernière régénération : 22/10/2026, 23 h (appels, journée par business, couleurs,
+> capacité 9 h 30). La précédente du même soir ; avant elle, le 10/08 (73 jours de
+> photo périmée, qui affirmait encore « SUPABASE_ACCESS_TOKEN résolu »).
 >
 > Ceci est une **photo**, pas la source. Pour toute question précise —
 > un contact, un devis, une tâche, un souvenir daté — interroger le cerveau
@@ -11,20 +12,26 @@
 ## Où en est chaque pôle
 
 Les 7 plans de novembre sont ACTIFS du 23/10 au 22/11 (onglet « Plan du mois » de
-l'app). Chaque tâche de plan a son heure dans l'Agenda depuis le 22/10. Les
-brouillons de décembre arrivent dans « À valider » le 15/11.
+l'app). Chaque tâche de plan a son heure dans l'Agenda depuis le 22/10, posée en
+UN BLOC PAR BUSINESS ; l'Agenda et le Cockpit montrent une carte par business avec
+sa liste à cocher (commit 97cc356). Les brouillons de décembre arrivent dans
+« À valider » le 15/11.
 
 **Noklik** (`noklik`, lancement) — vendre 4 sites en 4 semaines, un par semaine.
-1 200 appels d'équipe (60 par jour à quatre, dont 15 pour Maxence), 16 RDV,
-8 devis, 197 numéros à ajouter au fichier. Départ (21/10) : 0 devis, 0 vente,
+APPELS : 60 par jour POUR CHACUN des quatre associés (décision du 22/10 ; ceux de
+Maxence en 3 séances de 20 dans les créneaux des artisans), 16 RDV, 8 devis, 197
+numéros à ajouter au fichier. Départ (21/10) : 0 devis, 0 vente,
 aucun appel depuis le 14/10. CIBLE : les artisans, PAS les 253 exploitations
 agricoles du fichier Peillet (décision de Maxence du 06/10, à ne pas reposer en
-tâche). Blockers : associés sans le plan (envoi le 23/10), 3 RDV sans date,
+tâche). Blockers : associés sans le plan (envoi le 23/10 à 13:00), 3 RDV sans
+date (la tâche a été supprimée le 22/10 au soir, pas par l'agent : à confirmer),
 fiches légales (SIRET) de Tristan, Noé et William incomplètes.
 
-**Axiom** (`axiom-crm`, dev) — livrer le SaaS le 25/10, puis 30 appels par jour
-et mails pour signer les 3 premiers clients. Blocker : déploiement bloqué (Vercel
-Pro ou dépôt public), tâche en tête du 23/10. 1 070 contacts, 0 client.
+**Axiom** (`axiom-crm`, dev) — livrer le SaaS le 25/10, puis 15 appels par jour
+dès le 26/10 (décision du 22/10) et mails pour signer les 3 premiers clients.
+Blockers : déploiement bloqué (Vercel Pro ou dépôt public), tâche à 08:00 le 23/10 ;
+les vendredis, les 15 appels n'ont pas d'heure (créneaux des artisans pris par
+Noklik), proposition : après 15 h. 1 070 contacts, 0 client.
 
 **Vitalis Nutrition** (`vitalis`, lancement) — Shopify vitalisnutrition.fr.
 Passer de 6 à 70 visites par jour (plan de Maxence importé tel quel, ses dates
@@ -63,7 +70,9 @@ octet. `EXPO_TOKEN` fonctionne (deploy-web vert, run 235).
 ## Le rythme de Maxence
 
 - Alternance terminée (22/08) : journées entières disponibles. Capacité : 8 h de
-  travail réel par jour, agenda compris.
+  travail réel par jour, agenda compris ; **9 h 30 du lundi au vendredi pendant la
+  pause du basket** (choix du 22/10 : journées plus longues, rien de retiré),
+  `capaciteDu` dans src/utils/planDuMois.ts de max-os.
 - **Basket en pause du 22/10 au 22/11 au moins (blessure à la main)** : tous les
   soirs sont libres jusqu'à 22 h 30. À la reprise : lundi 20h30-22h30, mercredi
   19h-22h, jeudi 20h30-22h, samedi match (30 min de trajet de part et d'autre).
@@ -72,6 +81,17 @@ octet. `EXPO_TOKEN` fonctionne (deploy-web vert, run 235).
 
 ## Les derniers souvenirs
 
+- **22/10 (soir)** — **Une journée se lit par business.** « Au lieu de petites tâches
+  de 15 minutes… ça, ça, ça pour Vitalis » : cartes par business dans l'Agenda et
+  le Cockpit (le vendredi 23 : 25 tâches en 9 blocs). Bancs : Agenda 71/71,
+  Cockpit 23/23 ; en ligne (run 236, bundle relu). Commit 97cc356.
+- **22/10 (soir)** — **Couleurs, choix de Maxence** : FitTrack noir (contour clair),
+  Vitalis or, Axiom blanc, Maxwel bleu ciel, YouTube rouge ; Noklik garde son bleu.
+  120 tâches Noklik n'avaient pas de projet (en or comme Vitalis, rangées sous
+  « Perso ») : corrigé en base (migration noklik_projet_des_taches).
+- **22/10 (soir)** — **Le filet de sauvegarde des sessions est toujours en panne**
+  (curl vers Supabase = 000, environnement « Default ») : en attendant
+  l'environnement « MaxTask », finir chaque session par « consigne dans le cerveau ».
 - **22/10** — **Chaque tâche des plans a son heure.** « Pourquoi pour ma journée
   de demain j'ai rien de planifié » : les plans créaient des tâches avec un jour
   et sans heure. Fonction poser-horaires (525 heures posées du 23/10 au 22/11,
@@ -105,8 +125,11 @@ octet. `EXPO_TOKEN` fonctionne (deploy-web vert, run 235).
 
 ## Les règles qui gouvernent le travail
 
-119 règles dans `core_context`. Les trois du 22/10, puis celles qui mordent le plus :
+120 règles dans `core_context`. Les quatre du 22/10, puis celles qui mordent le plus :
 
+- **UNE JOURNÉE SE LIT PAR BUSINESS** — un bloc par business et par plage, avec sa
+  liste à cocher, jamais une suite de petites tâches mélangées ; une couleur par
+  business qui ne se confond avec aucune autre.
 - **UN JOUR N'EST PAS UN HORAIRE** — une tâche posée sur un jour reçoit aussi une
   heure, par poser-horaires, jamais « plus tard, à la main ».
 - **AVANT DE CRÉER UNE TÂCHE « DÉCIDER X », CHERCHER LA DÉCISION** — dans le
