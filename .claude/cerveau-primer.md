@@ -55,7 +55,8 @@ produites en un bloc de 4 h le samedi.
 
 **MaxTask / MAX BRAIN** (`maxtask`, dev) — l'app, dépôt `max-os`, se déploie à
 chaque push sur `main` à l'adresse imprimée par le run :
-**https://no-klik-crm.expo.app** (maxtask.expo.app sert encore le build du 04/10).
+**https://no-klik-crm.expo.app**, adresse gardée par Maxence le 23/10 (maxtask.expo.app
+n'est pas repointée : build périmé du 04/10, ne plus la donner).
 Livré les 21 et 22/10 : plan du mois, son brouillon automatique, et les horaires
 (fonction poser-horaires, commit ccb783f). Ce dépôt-ci (`MaxTask`) porte la
 méthode et les hooks.
