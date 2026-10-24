@@ -1,9 +1,9 @@
 # Primer du second cerveau — injecté au démarrage de chaque session
 
 > Régénéré depuis Supabase `brain-max` (`lgvtjqtytwyovllsqbgv`) à chaque session.
-> Dernière régénération : 22/10/2026, 23 h (appels, journée par business, couleurs,
-> capacité 9 h 30). La précédente du même soir ; avant elle, le 10/08 (73 jours de
-> photo périmée, qui affirmait encore « SUPABASE_ACCESS_TOKEN résolu »).
+> Dernière régénération : 24/10/2026, 12 h (report sans heure, retours sur les
+> tâches, passage du soir, deux tâches planifiées à créer le 25/10). La précédente
+> le 22/10 au soir.
 >
 > Ceci est une **photo**, pas la source. Pour toute question précise —
 > un contact, un devis, une tâche, un souvenir daté — interroger le cerveau
@@ -60,11 +60,17 @@ n'est pas repointée : build périmé du 04/10, ne plus la donner).
 Livré les 21 et 22/10 : plan du mois, son brouillon automatique, et les horaires
 (fonction poser-horaires, commit ccb783f). Ce dépôt-ci (`MaxTask`) porte la
 méthode et les hooks.
-**ATTENTION, état vérifié le 22/10 :** le workflow « Deploy Edge Functions »
-ÉCHOUE (runs 124 et 125, `Invalid access token` : le secret
-`SUPABASE_ACCESS_TOKEN` de max-os est invalide). Toute fonction Edge se déploie
-par le MCP Supabase, puis se prouve en relisant son code en ligne, octet par
-octet. `EXPO_TOKEN` fonctionne (deploy-web vert, run 235).
+Le workflow « Deploy Edge Functions » remarche depuis le 24/10 (run 128, secret
+renouvelé par Maxence). Livré les 23 et 24/10 : report de nuit sans heure et
+étiquette « sans-horaire » (commit 6c6692f), bouton « Enregistrer mon retour sans
+cocher » (commit cdd2097, run 238, bundle relu).
+**Tâches planifiées de Claude :** « Passage du soir Max Brain »
+(trig_01JjxC1NvG6anMof73hJ43Cn, 21:41 Paris) lit les retours de Maxence et
+prépare le lendemain ; premier passage le 24/10, PAS ENCORE PROUVÉ. Si ça passe,
+le 25/10 : tâche du matin (lun-ven 7 h 41, 10 brouillons Gmail Axiom, post
+LinkedIn mar/jeu) et tâche du dimanche soir (contenu long de la semaine dans les
+notes 📝). Brouillons seulement, rien n'est envoyé ni publié. `create_trigger`
+n'attache pas de connecteur : Maxence l'ajoute lui même sur claude.ai.
 
 **Reprise Entreprise** (`reprise`) — en pause, sans PRIMER.
 
@@ -81,6 +87,21 @@ octet. `EXPO_TOKEN` fonctionne (deploy-web vert, run 235).
   ven 9h30-12h et 14h-15h.
 
 ## Les derniers souvenirs
+
+- **24/10** — **Deux tâches planifiées de plus, à créer le 25/10 si le passage du
+  soir marche** (« oui crée les deux demain si ça passe ») : une centaine de tâches
+  des plans disent « Claude prépare » et rien ne les préparait.
+- **24/10** — **Retours sur les tâches** : Maxence note ce qui s'est passé dans la
+  fiche d'une tâche, le passage du soir s'y adapte (règle « RETOURS DE MAXENCE SUR
+  LES TÂCHES »). Stories Vitalis : on garde une par jour, avec 3 idées dans chaque
+  tâche ; Metricool noté, pas installé.
+- **23/10** — **Une tâche non faite passe au lendemain sans heure** ; 57 petites
+  relectures des plans sont « si j'ai du temps », sans heure. REFUSÉS par Maxence :
+  un plafond de 8 h, et resservir les vieilles tâches sans date.
+- **23/10** — Tristan : 2 vidéos par semaine (8 en tout), pas 2 sur le mois.
+  Relecture des 7 plans faite. Appels pas encore commencés ; Axiom pas fini
+  (livraison visée ce week end, lancement lundi « optimiste »), appels Axiom du
+  vendredi annulés. Notes 📝 « comment faire » dans les tâches.
 
 - **22/10 (soir)** — **Une journée se lit par business.** « Au lieu de petites tâches
   de 15 minutes… ça, ça, ça pour Vitalis » : cartes par business dans l'Agenda et
@@ -126,7 +147,12 @@ octet. `EXPO_TOKEN` fonctionne (deploy-web vert, run 235).
 
 ## Les règles qui gouvernent le travail
 
-120 règles dans `core_context`. Les quatre du 22/10, puis celles qui mordent le plus :
+Règles de `core_context` ; celles du 22 au 24/10, puis celles qui mordent le plus :
+
+- **RETOURS DE MAXENCE SUR LES TÂCHES** — un retour noté dans une tâche se lit et
+  change la suite le soir même.
+- **UNE TÂCHE PORTE DE QUOI LA FAIRE** — les idées, le texte à envoyer, le
+  planning : dans la note de la tâche, pas ailleurs.
 
 - **UNE JOURNÉE SE LIT PAR BUSINESS** — un bloc par business et par plage, avec sa
   liste à cocher, jamais une suite de petites tâches mélangées ; une couleur par
