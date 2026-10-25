@@ -1,9 +1,8 @@
 # Primer du second cerveau — injecté au démarrage de chaque session
 
 > Régénéré depuis Supabase `brain-max` (`lgvtjqtytwyovllsqbgv`) à chaque session.
-> Dernière régénération : 24/10/2026, 12 h (report sans heure, retours sur les
-> tâches, passage du soir, deux tâches planifiées à créer le 25/10). La précédente
-> le 22/10 au soir.
+> Dernière régénération : 25/10/2026, soir (report de nuit sans limite, Metricool,
+> tâches planifiées du matin et de la semaine, abonnés, script et séquence Axiom).
 >
 > Ceci est une **photo**, pas la source. Pour toute question précise —
 > un contact, un devis, une tâche, un souvenir daté — interroger le cerveau
@@ -17,27 +16,24 @@ UN BLOC PAR BUSINESS ; l'Agenda et le Cockpit montrent une carte par business av
 sa liste à cocher (commit 97cc356). Les brouillons de décembre arrivent dans
 « À valider » le 15/11.
 
-**Noklik** (`noklik`, lancement) — vendre 4 sites en 4 semaines, un par semaine.
-APPELS : 60 par jour POUR CHACUN des quatre associés (décision du 22/10 ; ceux de
-Maxence en 3 séances de 20 dans les créneaux des artisans), 16 RDV, 8 devis, 197
-numéros à ajouter au fichier. Départ (21/10) : 0 devis, 0 vente,
-aucun appel depuis le 14/10. CIBLE : les artisans, PAS les 253 exploitations
-agricoles du fichier Peillet (décision de Maxence du 06/10, à ne pas reposer en
-tâche). Blockers : associés sans le plan (envoi le 23/10 à 13:00), 3 RDV sans
-date (la tâche a été supprimée le 22/10 au soir, pas par l'agent : à confirmer),
-fiches légales (SIRET) de Tristan, Noé et William incomplètes.
+**Noklik** (`noklik`, lancement) — vendre 4 sites en 4 semaines. APPELS : 60 par jour
+pour chacun des quatre associés. CRM au 25/10 : 100 appels (8 depuis le 22/10), 4 RDV,
+0 devis, 0 vente, 226 numéros jamais appelés. FICHE GOOGLE DE NOKLIK ABANDONNÉE « pour
+l'instant » (24 et 25/10) ; le cas client Artisan Mousseau est gardé. CIBLE : les artisans,
+PAS les 253 exploitations agricoles (décision du 06/10). Blockers : les appels n'ont pas
+vraiment commencé, fiches légales des associés (à eux de les remplir), 3 RDV sans date.
 
-**Axiom** (`axiom-crm`, dev) — livrer le SaaS le 25/10, puis 15 appels par jour
-dès le 26/10 (décision du 22/10) et mails pour signer les 3 premiers clients.
-Blockers : déploiement bloqué (Vercel Pro ou dépôt public), tâche à 08:00 le 23/10 ;
-les vendredis, les 15 appels n'ont pas d'heure (créneaux des artisans pris par
-Noklik), proposition : après 15 h. 1 070 contacts, 0 client.
+**Axiom** (`axiom-crm`, dev) — livrer le SaaS, puis 15 appels par jour du lundi au
+jeudi dès le 26/10. ADRESSE : https://axiom-ia.fr, contact@axiom-ia.fr (axiom.fr est une
+AUTRE société). Script d'appel court et séquence de 3 mails écrits dans les tâches du
+26/10, à valider. Passage du matin (7:41) : 10 brouillons Gmail par jour. Blockers : SaaS
+pas fini au 23/10 (non revérifié), connecteurs du passage du matin à ajouter par Maxence.
 
-**Vitalis Nutrition** (`vitalis`, lancement) — Shopify vitalisnutrition.fr.
-Passer de 6 à 70 visites par jour (plan de Maxence importé tel quel, ses dates
-gardées fixes). Produit du mois : magnésium. Concours avec Tristan du 2 au 8/11.
-Blockers : le trafic, le planning à envoyer à Tristan (23/10), liens de suivi des
-bios (5/11), jeton Shopify de l'app invalide (repris du 04/09, non revérifié).
+**Vitalis Nutrition** (`vitalis`, lancement) — Shopify vitalisnutrition.fr, passer de 6 à
+70 visites par jour. Au 25/10 : 5,6 visites par jour, 0 commande depuis le 21/10, TikTok
+@vitalisnutrition.fr 20 abonnés. METRICOOL BRANCHÉ le 25/10 (marque Vitalis Nutrition,
+Instagram, TikTok, Facebook) : Claude programme les publications quand Maxence le demande.
+Concours avec Tristan du 2 au 8/11, 8 vidéos avec lui.
 
 **Maxwel IA** (`content`, actif) — une vidéo TikTok par jour, 25 → 250 abonnés.
 Par semaine : 5 « façon Loucash » (e-commerce ET IA) + 2 humour. Les idées du
@@ -53,24 +49,17 @@ jour par mois. Blockers : projet Supabase peut-être en pause (le réactiver le
 2 → 250 abonnés YouTube ce mois (vers 1 000 en 2 à 3 mois). 2 vidéos par semaine,
 produites en un bloc de 4 h le samedi.
 
-**MaxTask / MAX BRAIN** (`maxtask`, dev) — l'app, dépôt `max-os`, se déploie à
-chaque push sur `main` à l'adresse imprimée par le run :
-**https://no-klik-crm.expo.app**, adresse gardée par Maxence le 23/10 (maxtask.expo.app
-n'est pas repointée : build périmé du 04/10, ne plus la donner).
-Livré les 21 et 22/10 : plan du mois, son brouillon automatique, et les horaires
-(fonction poser-horaires, commit ccb783f). Ce dépôt-ci (`MaxTask`) porte la
-méthode et les hooks.
-Le workflow « Deploy Edge Functions » remarche depuis le 24/10 (run 128, secret
-renouvelé par Maxence). Livré les 23 et 24/10 : report de nuit sans heure et
-étiquette « sans-horaire » (commit 6c6692f), bouton « Enregistrer mon retour sans
-cocher » (commit cdd2097, run 238, bundle relu).
-**Tâches planifiées de Claude :** « Passage du soir Max Brain »
-(trig_01JjxC1NvG6anMof73hJ43Cn, 21:41 Paris) lit les retours de Maxence et
-prépare le lendemain ; premier passage le 24/10, PAS ENCORE PROUVÉ. Si ça passe,
-le 25/10 : tâche du matin (lun-ven 7 h 41, 10 brouillons Gmail Axiom, post
-LinkedIn mar/jeu) et tâche du dimanche soir (contenu long de la semaine dans les
-notes 📝). Brouillons seulement, rien n'est envoyé ni publié. `create_trigger`
-n'attache pas de connecteur : Maxence l'ajoute lui même sur claude.ai.
+**MaxTask / MAX BRAIN** (`maxtask`, dev) — l'app, dépôt `max-os`, se déploie à chaque push
+sur `main` à **https://no-klik-crm.expo.app**. Livré jusqu'au 25/10 : plan du mois,
+horaires, cartes par business, retours sans cocher, REPORT DE NUIT sans limite (toute
+tâche non cochée revient chaque nuit sans heure, sauf les routines ; cochée, elle sort de
+la liste), lecture des abonnés TikTok et YouTube (social-sync, en attente du SQL).
+**Tâches planifiées de Claude** (tout en brouillon, rien ne publie) : passage du soir
+21:41 (PROUVÉ le 24/10), du matin lun-ven 7:41, de la semaine dimanche 19:17.
+**À SAVOIR :** le connecteur Supabase bloque les UPDATE de `core_context` et
+`apply_migration` (validation qui n'arrive pas) ; INSERT et UPDATE de tasks, plans,
+businesses passent. Deux fichiers SQL attendent Maxence dans ce dépôt
+(`a-executer-dans-supabase-*.sql`). Le déploiement des fonctions remarche (run 128+).
 
 **Reprise Entreprise** (`reprise`) — en pause, sans PRIMER.
 
@@ -80,6 +69,7 @@ n'attache pas de connecteur : Maxence l'ajoute lui même sur claude.ai.
   travail réel par jour, agenda compris ; **9 h 30 du lundi au vendredi pendant la
   pause du basket** (choix du 22/10 : journées plus longues, rien de retiré),
   `capaciteDu` dans src/utils/planDuMois.ts de max-os.
+- **Report de nuit (25/10)** : une tâche non cochée revient chaque nuit, sans heure.
 - **Basket en pause du 22/10 au 22/11 au moins (blessure à la main)** : tous les
   soirs sont libres jusqu'à 22 h 30. À la reprise : lundi 20h30-22h30, mercredi
   19h-22h, jeudi 20h30-22h, samedi match (30 min de trajet de part et d'autre).
@@ -88,6 +78,16 @@ n'attache pas de connecteur : Maxence l'ajoute lui même sur claude.ai.
 
 ## Les derniers souvenirs
 
+- **25/10** — **Report de nuit sans limite** : « toutes les tâches non faites passent au
+  lendemain sans heure chaque nuit, tant qu'elle n'est pas cochée, tant que c'est pas une
+  routine ». Garde-fou validé : prévenir au delà de 10 tâches sans horaire ou 7 nuits.
+- **25/10** — **Publication** : quand Maxence la demande, Claude publie ou programme
+  directement ; les tâches automatiques restent en brouillon.
+- **25/10** — **Metricool branché** pour Vitalis ; abonnés TikTok et YouTube lisibles sur
+  les pages publiques (point de départ relevé par Claude, Maxence n'y a pas accès).
+- **25/10** — Script d'appel Axiom : il existait (05/08, tâche ccf16575), version courte
+  SaaS écrite. Séquence de 3 mails Axiom écrite. Passage du soir prouvé ; passages du
+  matin et de la semaine créés (sans connecteurs pour l'instant).
 - **24/10** — **Deux tâches planifiées de plus, à créer le 25/10 si le passage du
   soir marche** (« oui crée les deux demain si ça passe ») : une centaine de tâches
   des plans disent « Claude prépare » et rien ne les préparait.
@@ -147,7 +147,11 @@ n'attache pas de connecteur : Maxence l'ajoute lui même sur claude.ai.
 
 ## Les règles qui gouvernent le travail
 
-Règles de `core_context` ; celles du 22 au 24/10, puis celles qui mordent le plus :
+Règles de `core_context` ; celles du 22 au 25/10, puis celles qui mordent le plus :
+
+- **UN PLAN NE RECRÉE PAS CE QUI EXISTE DÉJÀ** — chercher X dans les tâches terminées
+  (documents, notes), skills et memories avant de créer « préparer X ».
+- **UNE VÉRIFICATION PROGRAMMÉE SE FAIT QUAND ELLE SONNE** — jamais « rien à faire ».
 
 - **RETOURS DE MAXENCE SUR LES TÂCHES** — un retour noté dans une tâche se lit et
   change la suite le soir même.
