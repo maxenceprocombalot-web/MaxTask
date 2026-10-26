@@ -1,8 +1,8 @@
 # Primer du second cerveau — injecté au démarrage de chaque session
 
 > Régénéré depuis Supabase `brain-max` (`lgvtjqtytwyovllsqbgv`) à chaque session.
-> Dernière régénération : 25/10/2026, soir (report de nuit sans limite, Metricool,
-> tâches planifiées du matin et de la semaine, abonnés, script et séquence Axiom).
+> Dernière régénération : 26/10/2026 (mails de prospection Axiom automatiques, passages
+> sans connecteur, mots de passe des boîtes mail). La précédente le 25/10 au soir.
 >
 > Ceci est une **photo**, pas la source. Pour toute question précise —
 > un contact, un devis, une tâche, un souvenir daté — interroger le cerveau
@@ -26,8 +26,10 @@ vraiment commencé, fiches légales des associés (à eux de les remplir), 3 RDV
 **Axiom** (`axiom-crm`, dev) — livrer le SaaS, puis 15 appels par jour du lundi au
 jeudi dès le 26/10. ADRESSE : https://axiom-ia.fr, contact@axiom-ia.fr (axiom.fr est une
 AUTRE société). Script d'appel court et séquence de 3 mails écrits dans les tâches du
-26/10, à valider. Passage du matin (7:41) : 10 brouillons Gmail par jour. Blockers : SaaS
-pas fini au 23/10 (non revérifié), connecteurs du passage du matin à ajouter par Maxence.
+26/10. MAILS DE PROSPECTION AUTOMATIQUES dès le 27/10 (décision du 26/10) : 10 nouveaux
+prospects par jour de semaine à 8 h 07 depuis contact@axiom-ia.fr, relances J+4 et J+10,
+arrêt sur réponse ou stop (fonction sequence-prospection, cron jobid 35). Blockers : SaaS
+pas fini au 23/10 (non revérifié), connecteur Supabase du passage du matin à ajouter.
 
 **Vitalis Nutrition** (`vitalis`, lancement) — Shopify vitalisnutrition.fr, passer de 6 à
 70 visites par jour. Au 25/10 : 5,6 visites par jour, 0 commande depuis le 21/10, TikTok
@@ -77,6 +79,12 @@ businesses passent. Deux fichiers SQL attendent Maxence dans ce dépôt
   ven 9h30-12h et 14h-15h.
 
 ## Les derniers souvenirs
+
+- **26/10** — **Les mails de prospection Axiom partent seuls**, relances comprises
+  (« tu les envoies tout seul, et même de relance ») : passage à blanc 10 prêts, aperçu
+  reçu par Maxence. Règle « ENVOI AUTOMATIQUE DE PROSPECTION ». Les passages du matin et
+  de la semaine ont tourné à vide (pas de connecteur). Mots de passe des boîtes mail en
+  clair dans mail_settings, affichés par erreur : à changer chez OVH.
 
 - **25/10** — **Report de nuit sans limite** : « toutes les tâches non faites passent au
   lendemain sans heure chaque nuit, tant qu'elle n'est pas cochée, tant que c'est pas une
@@ -147,7 +155,11 @@ businesses passent. Deux fichiers SQL attendent Maxence dans ce dépôt
 
 ## Les règles qui gouvernent le travail
 
-Règles de `core_context` ; celles du 22 au 25/10, puis celles qui mordent le plus :
+Règles de `core_context` ; celles du 22 au 26/10, puis celles qui mordent le plus :
+
+- **ENVOI AUTOMATIQUE DE PROSPECTION** — seulement dans le périmètre que Maxence a validé,
+  textes fixes, arrêt sur réponse, passage à blanc et aperçu avant le premier envoi.
+- **JAMAIS DE select * SUR UNE TABLE QUI PORTE DES MOTS DE PASSE** (mail_settings).
 
 - **UN PLAN NE RECRÉE PAS CE QUI EXISTE DÉJÀ** — chercher X dans les tâches terminées
   (documents, notes), skills et memories avant de créer « préparer X ».
