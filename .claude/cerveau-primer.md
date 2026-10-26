@@ -1,8 +1,8 @@
 # Primer du second cerveau — injecté au démarrage de chaque session
 
 > Régénéré depuis Supabase `brain-max` (`lgvtjqtytwyovllsqbgv`) à chaque session.
-> Dernière régénération : 26/10/2026 (mails de prospection Axiom automatiques, passages
-> sans connecteur, mots de passe des boîtes mail). La précédente le 25/10 au soir.
+> Dernière régénération : 26/10/2026, après midi (mails de prospection Axiom automatiques,
+> bilan Metricool de Vitalis et contenu en 2/2/2). La précédente le 25/10 au soir.
 >
 > Ceci est une **photo**, pas la source. Pour toute question précise —
 > un contact, un devis, une tâche, un souvenir daté — interroger le cerveau
@@ -35,6 +35,9 @@ pas fini au 23/10 (non revérifié), connecteur Supabase du passage du matin à 
 70 visites par jour. Au 25/10 : 5,6 visites par jour, 0 commande depuis le 21/10, TikTok
 @vitalisnutrition.fr 20 abonnés. METRICOOL BRANCHÉ le 25/10 (marque Vitalis Nutrition,
 Instagram, TikTok, Facebook) : Claude programme les publications quand Maxence le demande.
+BILAN (26/10) : meilleure vidéo « 3 g de créatine = 700 g de bœuf » (3 313 vues Instagram),
+décrochage en 1 à 6 s, les réseaux n'amènent presque rien sur le site. CONTENU EN 2/2/2 par
+semaine (attirer, expliquer, vendre), règle « contenu_2_2_2 » du plan, banque déjà classée.
 Concours avec Tristan du 2 au 8/11, 8 vidéos avec lui.
 
 **Maxwel IA** (`content`, actif) — une vidéo TikTok par jour, 25 → 250 abonnés.
@@ -79,6 +82,10 @@ businesses passent. Deux fichiers SQL attendent Maxence dans ce dépôt
   ven 9h30-12h et 14h-15h.
 
 ## Les derniers souvenirs
+
+- **26/10** — **Vitalis en 2/2/2** : Maxence propose 2 contenus pour attirer, 2 pour
+  expliquer, 2 pour vendre (c'est le TOFU / MOFU / BOFU). Semaine du 26/10 rangée, une
+  idée par tâche ; nouveauté « 1 dose de whey ou 4 œufs » sur le modèle du « 700 g de bœuf ».
 
 - **26/10** — **Les mails de prospection Axiom partent seuls**, relances comprises
   (« tu les envoies tout seul, et même de relance ») : passage à blanc 10 prêts, aperçu
